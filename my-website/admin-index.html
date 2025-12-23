@@ -1,0 +1,1820 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - Odo Yaa's Signature</title>
+    
+    <!-- === SECURITY: PRELOADING PROTECTION === -->
+    <!-- This script runs immediately to block Ctrl+U, F12, and DevTools before the body loads -->
+    <script>
+        document.addEventListener('keydown', function(e) {
+            // Block Ctrl+U (View Source)
+            if (e.ctrlKey && (e.key === 'u' || e.key === 'U')) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+            // Block Ctrl+S (Save)
+            if (e.ctrlKey && (e.key === 's' || e.key === 'S')) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+            // Block F12 (DevTools)
+            if (e.key === 'F12') {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+            // Block Ctrl+Shift+I (DevTools)
+            if (e.ctrlKey && e.shiftKey && (e.key === 'i' || e.key === 'I')) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+        });
+    </script>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap"
+        rel="stylesheet">
+    <!--FAVICON-->
+    <link rel="icon" type="image/png" href="https://ncfqnbztgxwjkpfggwlj.supabase.co/storage/v1/object/public/assets/branding/odo.jpg">
+    <!-- Feather Icons -->
+    <script src="https://unpkg.com/feather-icons"></script>
+    <!-- Chart.js for Dashboard -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Three.js for 3D element -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    
+    <!-- SUPABASE: Updated Supabase Client Library -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <style>
+        :root {
+            /* Light Mode Theme */
+            --bg-color: #f9fafb; /* Light gray (Tailwind gray-50) */
+            --text-color: #111827; /* Dark gray (Tailwind gray-900) */
+            --text-color-muted: #4b5563; /* Medium gray (Tailwind gray-600) */
+            --text-color-amber: #d97706;
+            --text-color-logo: #0a0a0a;
+            --text-color-logo-amber: #f59e0b;
+            --bg-card: #ffffff;
+            --border-card: #e5e7eb; /* Lighter border (Tailwind gray-200) */
+            --bg-input: #f3f4f6; /* Lighter input (Tailwind gray-100) */
+            --border-input: #d1d5db; /* (Tailwind gray-300) */
+            --input-focus-ring: #f59e0b;
+            --bg-button: #f59e0b;
+            --text-button: #000000;
+            --bg-button-hover: #fca92b;
+            
+            /* NEW Light Sidebar */
+            --bg-sidebar: #ffffff;
+            --text-sidebar: #374151; /* Dark text */
+            --text-sidebar-hover: #000000; /* Black text on hover */
+            --bg-sidebar-hover: #f3f4f6; /* Light gray hover */
+            --bg-sidebar-active: #f59e0b;
+            --text-sidebar-active: #ffffff; /* White text on active */
+
+            /* ENHANCEMENT: Added new variable for login card */
+            --bg-card-modal-login: rgba(255, 255, 255, 0.8);
+        }
+
+        html.dark {
+            /* Dark Mode Theme */
+            --bg-color: #0a0a0a;
+            --text-color: #f8fafc;
+            --text-color-muted: #94a3b8;
+            --bg-card: #1f2937;
+            --border-card: #374151;
+            --bg-input: #374151;
+            --border-input: #4b5563;
+            
+            /* Dark Sidebar (Original) */
+            --bg-sidebar: #111827;
+            --text-sidebar: #d1d5db;
+            --text-sidebar-hover: #ffffff;
+            --bg-sidebar-hover: #374151;
+            --bg-sidebar-active: #f59e0b;
+            --text-sidebar-active: #000000;
+
+            /* ENHANCEMENT: Added dark variable for login card */
+            --bg-card-modal-login: rgba(31, 41, 55, 0.8);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            transition: background-color 0.3s ease, color 0.3s ease;
+            overflow-x: hidden; /* Prevent horizontal scroll */
+        }
+
+        .logo-font {
+            font-family: 'Playfair Display', serif;
+        }
+
+        /* Page transitions */
+        .page {
+            display: none;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Sidebar styling */
+        .sidebar-link {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            border-radius: 0.375rem;
+            color: var(--text-sidebar);
+            transition: all 0.3s ease-in-out; /* Smoother transition */
+        }
+        .sidebar-link:hover {
+            background-color: var(--bg-sidebar-hover);
+            color: var(--text-sidebar-hover);
+            transform: translateX(4px); /* Add slight move on hover */
+        }
+        .sidebar-link.active {
+            background-color: var(--bg-sidebar-active);
+            color: var(--text-sidebar-active);
+            font-weight: 600;
+        }
+        .sidebar-link svg {
+            width: 1.25rem;
+            height: 1.25rem;
+            margin-right: 0.75rem;
+            transition: all 0.3s ease-in-out;
+        }
+        .sidebar-link.active svg {
+             transform: scale(1.1); /* Active icon pulse */
+        }
+        
+        /* Mobile Sidebar */
+        .sidebar-open {
+            transform: translateX(0) !important;
+        }
+        
+        /* Sidebar transition for light/dark mode */
+        aside {
+            transition: background-color 0.3s ease;
+            border-right: 1px solid var(--border-card);
+        }
+
+        /* General element styling */
+        .bg-card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-card);
+            transition: all 0.3s ease-in-out;
+        }
+        
+        /* NEW: Stat Card Hover Effect */
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        html.dark .stat-card:hover {
+             box-shadow: 0 10px 15px -3px rgba(245, 158, 11, 0.1), 0 4px 6px -2px rgba(245, 158, 11, 0.05);
+        }
+        
+        
+        .bg-input {
+            background-color: var(--bg-input);
+            color: var(--text-color);
+            border: 1px solid var(--border-input);
+            transition: all 0.3s ease-in-out;
+        }
+        .bg-input:focus {
+            outline: none;
+            box-shadow: 0 0 0 2px var(--input-focus-ring);
+            border-color: transparent;
+        }
+        .bg-button {
+             background-color: var(--bg-button);
+             color: var(--text-button);
+             transition: all 0.3s ease-in-out;
+        }
+        .bg-button:hover {
+             background-color: var(--bg-button-hover);
+             transform: translateY(-2px);
+             box-shadow: 0 4px 10px rgba(245, 158, 11, 0.3);
+        }
+        
+        /* Table styling */
+        table thead th {
+            background-color: var(--bg-input);
+            transition: all 0.3s ease-in-out;
+        }
+        /* NEW: Table row hover */
+        tbody tr {
+            transition: background-color 0.2s ease;
+        }
+        tbody tr:hover {
+            background-color: var(--bg-input);
+        }
+        
+        /* Modal styling */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 100;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(5px);
+            animation: fadeInModal 0.3s;
+        }
+        .modal-content {
+            position: relative;
+            margin: 5% auto;
+            max-width: 90%;
+        }
+        @keyframes fadeInModal {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        .modal-body {
+             max-height: 70vh;
+             overflow-y: auto;
+        }
+        
+        /* 3D Canvas */
+        #admin-3d-bg {
+            position: fixed;
+            top: -50px;
+            right: -100px;
+            width: 400px;
+            height: 400px;
+            z-index: 0;
+            opacity: 0.2;
+            pointer-events: none;
+        }
+        
+        /* Chart Container */
+        #revenue-chart-container {
+            height: 350px;
+            position: relative;
+        }
+        
+        /* SUPABASE: Added styles for loader */
+        .loader {
+            border-top-color: var(--bg-button);
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* ENHANCEMENT: Styles for Login Page */
+        #login-screen {
+            background: linear-gradient(135deg, var(--bg-color) 0%, var(--bg-sidebar) 100%);
+            position: relative;
+            overflow: hidden;
+        }
+        #login-3d-bg {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            opacity: 0.5;
+        }
+        .input-icon {
+            position: absolute;
+            top: 50%;
+            left: 0.75rem; /* 12px */
+            transform: translateY(-50%);
+            color: var(--text-color-muted);
+            pointer-events: none;
+        }
+        .password-toggle {
+            position: absolute;
+            top: 50%;
+            right: 0.75rem; /* 12px */
+            transform: translateY(-50%);
+            color: var(--text-color-muted);
+            cursor: pointer;
+        }
+        .password-toggle:hover {
+            color: var(--text-color);
+        }
+
+        /* ENHANCEMENT: Login card animation */
+        @keyframes fadeInLoginCard {
+            from { opacity: 0; transform: scale(0.95) translateY(10px); }
+            to { opacity: 1; transform: scale(1) translateY(0); }
+        }
+        .login-card-animate {
+            animation: fadeInLoginCard 0.5s ease-out forwards;
+            /* Optimize rendering */
+            transform: translateZ(0);
+        }
+        
+        /* === BASH / TERMINAL STYLING === */
+        #terminal-overlay {
+            transition: opacity 0.2s ease-in-out;
+        }
+        #terminal-overlay.hidden {
+            display: none !important;
+        }
+        /* Custom scrollbar for terminal */
+        #terminal-output::-webkit-scrollbar {
+            width: 8px;
+        }
+        #terminal-output::-webkit-scrollbar-track {
+            background: #1f2937;
+        }
+        #terminal-output::-webkit-scrollbar-thumb {
+            background: #4b5563;
+            border-radius: 4px;
+        }
+        #terminal-output::-webkit-scrollbar-thumb:hover {
+            background: #6b7280;
+        }
+        /* SCANLINE EFFECT */
+        .scanline {
+            background: linear-gradient(
+                to bottom,
+                rgba(255,255,255,0),
+                rgba(255,255,255,0) 50%,
+                rgba(0,0,0,0.2) 50%,
+                rgba(0,0,0,0.2)
+            );
+            background-size: 100% 4px;
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+    </style>
+</head>
+
+<body class="flex min-h-screen">
+    
+    <!-- SUPABASE: Added Login Screen -->
+    <div id="login-screen" class="w-full h-screen flex items-center justify-center">
+        <!-- ENHANCEMENT: Added 3D background canvas for login -->
+        <canvas id="login-3d-bg"></canvas>
+
+        <!-- ENHANCEMENT: Added w-11/12, max-w-xs, sm:max-w-md and animation class -->
+        <div class="w-11/12 max-w-xs sm:max-w-md p-8 space-y-6 rounded-lg shadow-xl login-card-animate" style="z-index: 1; backdrop-filter: blur(10px); background-color: var(--bg-card-modal-login);">
+            <div class="text-center">
+                <span class="text-3xl font-bold logo-font" style="color: var(--text-color-logo);">ODO</span>
+                <span class="text-3xl font-bold logo-font" style="color: var(--text-color-logo-amber);"> YAA'S</span>
+                <span class="text-3xl font-bold logo-font" style="color: var(--text-color-logo);"> ADMIN</span>
+            </div>
+            <!-- ENHANCEMENT: Added novalidate -->
+            <form id="login-form" class="space-y-4" novalidate>
+                <!-- ENHANCEMENT: Added relative container and icon -->
+                <div class="relative">
+                    <label for="login-email" class="block text-sm font-medium">Email</label>
+                    <!-- REMOVED: value="..." attribute -->
+                    <!-- ENHANCEMENT: Added autofocus and pl-10 for icon -->
+                    <input type="email" id="login-email" required class="w-full p-2 pl-10 bg-input rounded-md" autofocus>
+                    <i data-feather="mail" class="input-icon"></i>
+                </div>
+                <!-- ENHANCEMENT: Added relative container and icons -->
+                <div class="relative">
+                    <label for="login-password" class="block text-sm font-medium">Password</label>
+                    <!-- REMOVED: value="..." attribute -->
+                    <!-- ENHANCEMENT: Added pl-10 for icon -->
+                    <input type="password" id="login-password" required class="w-full p-2 pl-10 bg-input rounded-md">
+                    <i data-feather="lock" class="input-icon"></i>
+                    <button type="button" id="toggle-password" class="password-toggle">
+                        <!-- FIX: Added both icons and classes to toggle -->
+                        <i data-feather="eye" class="w-5 h-5 icon-eye"></i>
+                        <i data-feather="eye-off" class="w-5 h-5 icon-eye-off hidden"></i>
+                    </button>
+                </div>
+                <!-- ENHANCEMENT: Added spinner for loading state -->
+                <button type="submit" id="login-button" class="w-full bg-button text-button font-bold py-3 rounded-lg hover:bg-button-hover flex items-center justify-center">
+                    <span id="login-button-text">Login</span>
+                    <div id="login-spinner" class="loader w-5 h-5 border-2 rounded-full ml-2" style="display: none; border-top-color: var(--text-button);"></div>
+                </button>
+                <!-- ENHANCEMENT: Added font-medium -->
+                <p id="login-error" class="text-center text-red-500 text-sm font-medium"></p>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Main Admin App (NOW HIDDEN by default) -->
+    <div id="admin-app" class="w-full h-full" style="display: none;">
+        <!-- ... (Rest of the admin app HTML is unchanged) ... -->
+        <!-- Sidebar Overlay (Mobile) -->
+        <div id="sidebar-overlay" class="fixed inset-0 bg-black/50 z-40 hidden md:hidden"></div>
+
+        <!-- Sidebar -->
+        <aside id="admin-sidebar" class="w-64 flex-shrink-0 fixed inset-y-0 left-0 z-50 transform -translate-x-full md:translate-x-0 transition-transform duration-300 ease-in-out" style="background-color: var(--bg-sidebar);">
+            <div class="flex flex-col h-full">
+                <div class="p-4">
+                    <!-- Logo -->
+                    <a href="#" class="flex items-center p-2 mb-4">
+                        <!-- Logo Fix: Added whitespace-nowrap -->
+                        <span class="text-2xl font-bold logo-font text-white whitespace-nowrap" style="color: var(--text-sidebar);">ODO YAA'S</span>
+                        <span class="text-2xl font-bold logo-font whitespace-nowrap" style="color: var(--text-color-logo-amber);">&nbsp;ADMIN</span>
+                    </a>
+                    
+                    <!-- Navigation -->
+                    <nav class="space-y-2">
+                        <a href="#dashboard" class="sidebar-link active" data-page="dashboard">
+                            <i data-feather="home"></i>
+                            <span>Dashboard</span>
+                        </a>
+                        <a href="#inventory" class="sidebar-link" data-page="inventory">
+                            <i data-feather="package"></i>
+                            <span>Inventory</span>
+                        </a>
+                        <a href="#orders" class="sidebar-link" data-page="orders">
+                            <i data-feather="shopping-cart"></i>
+                            <span>Orders</span>
+                        </a>
+                        <a href="#testimonials" class="sidebar-link" data-page="testimonials">
+                            <i data-feather="message-square"></i>
+                            <span>Testimonials</span>
+                        </a>
+                    </nav>
+                </div>
+
+                <!-- Bottom Sidebar Section -->
+                <div class="mt-auto p-4 space-y-2">
+                     <!-- SUPABASE: Added Logout Button -->
+                    <button id="logout-button" class="sidebar-link p-2 w-full justify-start text-red-500 hover:bg-red-100">
+                        <i data-feather="log-out" class="m-0 mr-2"></i>
+                        <span>Logout</span>
+                    </button>
+                    
+                    <!-- Theme Toggle (Icon Only) -->
+                    <button id="theme-toggle" class="sidebar-link p-2 w-full justify-center">
+                        <i id="theme-icon-sun" data-feather="sun" class="hidden m-0"></i>
+                        <i id="theme-icon-moon" data-feather="moon" class="hidden m-0"></i>
+                        <!-- "Toggle Theme" text REMOVED -->
+                    </button>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="flex-1 p-6 md:p-10 pt-20 md:pt-10 md:ml-64 relative">
+            <!-- 3D Background Element -->
+            <canvas id="admin-3d-bg"></canvas>
+
+            <!-- Mobile Header -->
+            <header class="md:hidden fixed top-0 left-0 right-0 z-30 flex items-center justify-between p-4" style="background-color: var(--bg-card); border-bottom: 1px solid var(--border-card);">
+                <button id="mobile-menu-btn" class="p-2">
+                    <i data-feather="menu"></i>
+                </button>
+                <a href="#" class="flex items-center">
+                    <!-- Logo Fix: Added whitespace-nowrap -->
+                    <span class="text-xl font-bold logo-font whitespace-nowrap" style="color: var(--text-color-logo);">ODO YAA'S</span>
+                    <span class="text-xl font-bold logo-font whitespace-nowrap" style="color: var(--text-color-logo-amber);">&nbsp;ADMIN</span>
+                </a>
+                <div class="w-8"></div> <!-- Spacer -->
+            </header>
+
+            <!-- Page: Dashboard -->
+            <div id="dashboard-page" class="page active relative z-10">
+                <h1 class="text-4xl font-bold logo-font mb-8">Dashboard</h1>
+                
+                <!-- Stat Cards -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                    <div class="bg-card p-6 rounded-lg shadow-lg stat-card">
+                        <h2 class="text-lg font-semibold text-amber mb-2">Total Revenue</h2>
+                        <p id="stat-total-revenue" class="text-4xl font-bold">GH₵0.00</p>
+                    </div>
+                    <div class="bg-card p-6 rounded-lg shadow-lg stat-card">
+                        <h2 class="text-lg font-semibold text-amber mb-2">Total Orders</h2>
+                        <p id="stat-total-orders" class="text-4xl font-bold">0</p>
+                    </div>
+                    <div class="bg-card p-6 rounded-lg shadow-lg stat-card">
+                        <h2 class="text-lg font-semibold text-amber mb-2">Products in Stock</h2>
+                        <p id="stat-total-products" class="text-4xl font-bold">0</p>
+                    </div>
+                    <div class="bg-card p-6 rounded-lg shadow-lg stat-card">
+                        <h2 class="text-lg font-semibold text-amber mb-2">Testimonials</h2>
+                        <p id="stat-total-testimonials" class="text-4xl font-bold">0</p>
+                    </div>
+                </div>
+
+                <!-- New Dashboard Row: Chart and Top Products -->
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-8">
+                    <!-- Revenue Chart -->
+                    <div class="lg:col-span-2 bg-card p-6 rounded-lg shadow-lg">
+                        <h2 class="text-2xl font-bold logo-font mb-4">Revenue (Last 30 Days)</h2>
+                        <div id="revenue-chart-container">
+                            <canvas id="revenue-chart"></canvas>
+                        </div>
+                    </div>
+                    
+                    <!-- Top Selling Products -->
+                    <div class="bg-card p-6 rounded-lg shadow-lg">
+                        <h2 class="text-2xl font-bold logo-font mb-4">Top Selling Products</h2>
+                        <ul id="top-products-list" class="space-y-4">
+                            <!-- JS will fill this -->
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Recent Orders (Quick View) -->
+                <div class="bg-card p-6 rounded-lg shadow-lg mt-8">
+                    <h2 class="text-2xl font-bold logo-font mb-4">Recent Orders</h2>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left">
+                            <thead>
+                                <tr>
+                                    <th class="p-3">Order ID</th>
+                                    <th class="p-3">Customer</th>
+                                    <th class="p-3">Total</th>
+                                    <th class="p-3">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="dashboard-orders-table">
+                                <!-- Rows will be injected by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Page: Inventory Management -->
+            <div id="inventory-page" class="page relative z-10">
+                <div class="flex flex-col sm:flex-row justify-between sm:items-center mb-8 gap-4">
+                    <h1 class="text-4xl font-bold logo-font">Inventory</h1>
+                    <button id="add-product-btn" class="bg-button text-button font-semibold py-2 px-4 rounded-lg flex items-center justify-center">
+                        <i data-feather="plus" class="w-5 h-5 mr-1"></i>
+                        <span>Add New Product</span>
+                    </button>
+                </div>
+                
+                <div class="bg-card p-6 rounded-lg shadow-lg overflow-x-auto">
+                    <table class="w-full text-left min-w-[800px]">
+                        <thead>
+                            <tr>
+                                <th class="p-3">Image</th>
+                                <th class="p-3">Name</th>
+                                <th class="p-3">Category</th>
+                                <th class="p-3">Price</th>
+                                <th class="p-3">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="inventory-table">
+                            <!-- Rows will be injected by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Page: Order Management -->
+            <div id="orders-page" class="page relative z-10">
+                <h1 class="text-4xl font-bold logo-font mb-8">Orders</h1>
+                
+                <div class="bg-card p-6 rounded-lg shadow-lg overflow-x-auto">
+                    <table class="w-full text-left min-w-[800px]">
+                        <thead>
+                            <tr>
+                                <th class="p-3">Order ID</th>
+                                <th class="p-3">Date</th>
+                                <th class="p-3">Customer</th>
+                                <th class="p-3">Phone</th>
+                                <th class="p-3">Total</th>
+                                <th class="p-3">Status</th>
+                                <th class="p-3">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="orders-table">
+                            <!-- Rows will be injected by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Page: Testimonials Management -->
+            <div id="testimonials-page" class="page relative z-10">
+                <h1 class="text-4xl font-bold logo-font mb-8">Testimonials</h1>
+
+                <div class="bg-card p-6 rounded-lg shadow-lg overflow-x-auto">
+                    <table class="w-full text-left min-w-[600px]">
+                        <thead>
+                            <tr>
+                                <th class="p-3">Name</th>
+                                <th class="p-3">Comment</th>
+                                <th class="p-3">Date</th>
+                                <th class="p-3">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="testimonials-table">
+                            <!-- Rows will be injected by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </main>
+    </div> <!-- End #admin-app -->
+
+    <!-- Modal: Add/Edit Product (Unchanged) -->
+    <div id="product-modal" class="modal">
+        <div class="modal-content w-full md:w-3/4 lg:w-1/2 bg-card rounded-lg shadow-xl">
+            <div class="flex justify-between items-center p-4 border-b" style="border-color: var(--border-card);">
+                <h2 id="modal-title" class="text-2xl font-bold logo-font">Add New Product</h2>
+                <button id="close-modal-btn" class="text-2xl">&times;</button>
+            </div>
+            <form id="product-form" class="modal-body p-6 space-y-4">
+                <input type="hidden" id="product-id" value="0">
+                <div>
+                    <label for="product-name" class="block text-sm font-medium mb-1">Product Name</label>
+                    <input type="text" id="product-name" required class="w-full p-2 bg-input rounded-md">
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label for="product-price" class="block text-sm font-medium mb-1">Price (GH₵)</label>
+                        <input type="number" step="0.01" id="product-price" required class="w-full p-2 bg-input rounded-md">
+                    </div>
+                    <div>
+                        <label for="product-category" class="block text-sm font-medium mb-1">Category</label>
+                        <select id="product-category" required class="w-full p-2 bg-input rounded-md">
+                            <option value="For Him">For Him</option>
+                            <option value="For Her">For Her</option>
+                            <option value="Unisex">Unisex</option>
+                            <option value="Gift Sets">Gift Sets</option>
+                            <option value="Skin Care">Skin Care</option>
+                            <option value="For Kids">For Kids</option>
+                        </select>
+                    </div>
+                </div>
+                <div>
+                    <!-- MODIFIED: Changed placeholder to be more clear -->
+                    <label for="product-image" class="block text-sm font-medium mb-1">Image URL (e.g., https://...)</label>
+                    <input type="text" id="product-image" required class="w-full p-2 bg-input rounded-md">
+                </div>
+                <div>
+                    <label for="product-description" class="block text-sm font-medium mb-1">Description</label>
+                    <textarea id="product-description" rows="3" required class="w-full p-2 bg-input rounded-md"></textarea>
+                </div>
+                 <div>
+                    <label for="product-ingredients" class="block text-sm font-medium mb-1">Ingredients & Notes</label>
+                    <textarea id="product-ingredients" rows="2" required class="w-full p-2 bg-input rounded-md"></textarea>
+                </div>
+                 <div>
+                    <label for="product-longevity" class="block text-sm font-medium mb-1">Scent Longevity</label>
+                    <input type="text" id="product-longevity" required class="w-full p-2 bg-input rounded-md">
+                </div>
+                <div>
+                    <label class="flex items-center space-x-2">
+                        <input type="checkbox" id="product-new-arrival" class="p-2 bg-input rounded-md">
+                        <span>Is this a "New Arrival"?</span>
+                    </label>
+                </div>
+                <div class="pt-4">
+                    <button type="submit" id="save-product-btn" class="w-full bg-button text-button font-bold py-3 rounded-lg hover:bg-button-hover">Save Product</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal: Order Details (Unchanged) -->
+    <div id="order-details-modal" class="modal">
+        <div class="modal-content w-full md:w-3/4 lg:w-1/2 bg-card rounded-lg shadow-xl">
+            <div class="flex justify-between items-center p-4 border-b" style="border-color: var(--border-card);">
+                <h2 id="order-modal-title" class="text-2xl font-bold logo-font">Order Details</h2>
+                <button id="close-order-modal-btn" class="text-2xl">&times;</button>
+            </div>
+            <div class="modal-body p-6 space-y-4">
+                <div id="order-customer-details">
+                    <!-- Customer details injected here -->
+                </div>
+                <h3 class="text-lg font-semibold logo-font border-t pt-4">Items Ordered</h3>
+                <div id="order-items-list" class="space-y-2">
+                    <!-- Items injected here -->
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Toast Notification (Unchanged) -->
+    <div id="toast-notification" class="hidden fixed bottom-10 right-10 py-3 px-6 rounded-lg shadow-xl z-50 text-white">
+        <p id="toast-message"></p>
+    </div>
+
+    <!-- SUPABASE: Loader overlay -->
+    <div id="loader-overlay" class="fixed inset-0 bg-black/50 z-[999] flex items-center justify-center" style="display: none;">
+        <div class="loader w-16 h-16 border-4 border-gray-200 rounded-full"></div>
+    </div>
+    
+    <!-- === TERMINAL EMULATOR / BASH UI === -->
+    <div id="terminal-overlay" class="hidden fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-md">
+        <!-- Scanline Effect -->
+        <div class="scanline"></div>
+        
+        <div class="w-full max-w-4xl h-[500px] bg-gray-900 rounded-lg shadow-2xl flex flex-col overflow-hidden border border-gray-700 font-mono text-sm transform transition-all relative z-20">
+            <!-- Terminal Header -->
+            <div class="bg-gray-800 px-4 py-2 flex justify-between items-center border-b border-gray-700 select-none">
+                <div class="flex items-center space-x-2">
+                    <div class="flex space-x-1.5">
+                        <div class="w-3 h-3 rounded-full bg-red-500"></div>
+                        <div class="w-3 h-3 rounded-full bg-yellow-500"></div>
+                        <div class="w-3 h-3 rounded-full bg-green-500"></div>
+                    </div>
+                    <span class="text-gray-400 ml-3 font-semibold">admin@odoyaa:~ (bash)</span>
+                </div>
+                <button id="close-terminal-btn" class="text-gray-400 hover:text-white focus:outline-none">&times;</button>
+            </div>
+            
+            <!-- Terminal Output Area -->
+            <div id="terminal-output" class="flex-1 p-4 overflow-y-auto bg-gray-900 text-green-400 space-y-1 font-mono">
+                <div class="text-gray-400">Odo Yaa's Admin CLI v2.0.1 [SECURE MODE]</div>
+                <div class="text-gray-400">Copyright (c) 2024 Odo Yaa's Signature. All rights reserved.</div>
+                <br>
+                <div class="text-gray-400">Type <span class="text-white font-bold">'help'</span> to see available commands.</div>
+                <div class="text-gray-400">----------------------------------------</div>
+            </div>
+            
+            <!-- Terminal Input Line -->
+            <div class="bg-gray-900 p-3 border-t border-gray-700 flex items-center">
+                <span class="text-green-500 mr-2 font-bold select-none">➜</span>
+                <span class="text-cyan-400 mr-2 font-bold select-none">~</span>
+                <input type="text" id="terminal-input" class="flex-1 bg-transparent border-none outline-none text-white focus:ring-0 font-mono" autocomplete="off" spellcheck="false" placeholder="Enter command...">
+            </div>
+        </div>
+    </div>
+
+
+    <!-- 
+    =================================================
+    === SUPABASE: ALL JAVASCRIPT REPLACED BELOW ===
+    =================================================
+    -->
+    <script>
+        // === SUPABASE: NEW SCRIPT ===
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- Feather Icons ---
+            feather.replace();
+
+            // --- Supabase Client ---
+            const SUPABASE_URL = 'https://ncfqnbztgxwjkpfggwlj.supabase.co';
+            const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5jZnFuYnp0Z3h3amtwZmdnd2xqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjIyNjA5MjQsImV4cCI6MjA3NzgzNjkyNH0.kbR2e8UZgOymRq9YqI_8QXrfnPeOlgxKFWyQaDoqHBM';
+            let supabase;
+            try {
+                supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+            } catch (error) {
+                console.error("Error creating Supabase client:", error);
+                alert("Supabase client failed to initialize. Check console.");
+                return;
+            }
+
+            // --- Global State ---
+            let allProducts = [];
+            let allOrders = [];
+            let allTestimonials = [];
+            let currentEditProductId = 0;
+            let revenueChart = null;
+
+            // --- DOM Elements ---
+            const loginScreen = document.getElementById('login-screen');
+            const loginForm = document.getElementById('login-form');
+            const loginError = document.getElementById('login-error');
+            const adminApp = document.getElementById('admin-app');
+            const logoutButton = document.getElementById('logout-button');
+            const loader = document.getElementById('loader-overlay');
+            
+            // ENHANCEMENT: Login form elements
+            const loginButton = document.getElementById('login-button');
+            const loginButtonText = document.getElementById('login-button-text');
+            const loginSpinner = document.getElementById('login-spinner');
+            const loginPasswordInput = document.getElementById('login-password');
+            const togglePasswordBtn = document.getElementById('toggle-password');
+
+            const pages = document.querySelectorAll('.page');
+            const sidebarLinks = document.querySelectorAll('nav .sidebar-link'); 
+            const productModal = document.getElementById('product-modal');
+            const addProductBtn = document.getElementById('add-product-btn');
+            const closeModalBtn = document.getElementById('close-modal-btn');
+            const productForm = document.getElementById('product-form');
+            const modalTitle = document.getElementById('modal-title');
+            const orderDetailsModal = document.getElementById('order-details-modal');
+            const closeOrderModalBtn = document.getElementById('close-order-modal-btn');
+            const toast = document.getElementById('toast-notification');
+            const toastMessage = document.getElementById('toast-message');
+            
+            const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+            const adminSidebar = document.getElementById('admin-sidebar');
+            const sidebarOverlay = document.getElementById('sidebar-overlay');
+
+            // Admin panel 3D scene
+            let scene, camera, renderer, crystal;
+            const canvas = document.getElementById('admin-3d-bg');
+            
+            // ENHANCEMENT: Login 3D scene
+            let loginScene, loginCamera, loginRenderer, loginCrystal;
+            const loginCanvas = document.getElementById('login-3d-bg');
+
+            const themeToggle = document.getElementById('theme-toggle');
+            const sunIcon = document.getElementById('theme-icon-sun');
+            const moonIcon = document.getElementById('theme-icon-moon');
+            
+            // --- TERMINAL VARIABLES ---
+            const terminalOverlay = document.getElementById('terminal-overlay');
+            const terminalInput = document.getElementById('terminal-input');
+            const terminalOutput = document.getElementById('terminal-output');
+            const closeTerminalBtn = document.getElementById('close-terminal-btn');
+            
+            // Terminal History & Monitoring State
+            let commandHistory = [];
+            let historyIndex = -1;
+            let isMonitoring = true; // Default to monitoring
+            let realtimeChannel = null;
+
+            // --- Loader & Toast Functions ---
+            function showLoader() { loader.style.display = 'flex'; }
+            function hideLoader() { loader.style.display = 'none'; }
+
+            function showToast(message, isError = false) {
+                toastMessage.textContent = message;
+                toast.className = 'hidden'; // Reset classes
+                toast.classList.add('fixed', 'bottom-10', 'right-10', 'py-3', 'px-6', 'rounded-lg', 'shadow-xl', 'z-50', 'text-white');
+                if (isError) {
+                    toast.classList.add('bg-red-600');
+                } else {
+                    toast.classList.add('bg-green-600');
+                }
+                toast.classList.remove('hidden');
+                setTimeout(() => {
+                    toast.classList.add('hidden');
+                }, 3000);
+            }
+
+            // --- NEW: Authentication Logic ---
+            async function checkAuth() {
+                showLoader();
+                const { data: { session }, error } = await supabase.auth.getSession();
+                if (session) {
+                    // User is logged in
+                    loginScreen.style.display = 'none';
+                    adminApp.style.display = 'block';
+                    loadData(); // Load data
+                    init3D(); // Initialize 3D for admin
+                    initRealtime(); // Start realtime terminal monitoring
+                } else {
+                    // User is not logged in
+                    loginScreen.style.display = 'flex';
+                    adminApp.style.display = 'none';
+                }
+                hideLoader();
+            }
+
+            async function handleLogin(e) {
+                e.preventDefault();
+                // ENHANCEMENT: Client-side validation
+                loginError.textContent = '';
+                const email = document.getElementById('login-email').value;
+                const password = loginPasswordInput.value;
+
+                if (!email) {
+                    loginError.textContent = 'Email address is required.';
+                    return;
+                }
+                if (!password) {
+                    loginError.textContent = 'Password is required.';
+                    return;
+                }
+
+                showLoader();
+                // ENHANCEMENT: Show button loader
+                loginButton.disabled = true;
+                loginButtonText.style.display = 'none';
+                loginSpinner.style.display = 'block';
+                loginError.textContent = '';
+                
+                // Hardcoded check for the single admin user
+                if (email !== 'donatusernestmensah@gmail.com' || password !== '1002.Xtra') {
+                    loginError.textContent = 'Invalid credentials.';
+                    hideLoader();
+                    // ENHANCEMENT: Hide button loader
+                    loginButton.disabled = false;
+                    loginButtonText.style.display = 'block';
+                    loginSpinner.style.display = 'none';
+                    return;
+                }
+
+                try {
+                    const { data, error } = await supabase.auth.signInWithPassword({
+                        email: email,
+                        password: password,
+                    });
+
+                    if (error) throw error;
+
+                    if (data.user) {
+                        // Success!
+                        loginScreen.style.display = 'none';
+                        adminApp.style.display = 'block';
+                        loadData(); // Load data
+                        init3D(); // Initialize 3D for admin
+                        initRealtime(); // Start realtime monitoring
+                    }
+                } catch (error) {
+                    console.error('Login error:', error.message);
+                    loginError.textContent = 'Login failed. Please try again.';
+                } finally {
+                    hideLoader();
+                    // ENHANCEMENT: Hide button loader
+                    loginButton.disabled = false;
+                    loginButtonText.style.display = 'block';
+                    loginSpinner.style.display = 'none';
+                }
+            }
+
+            async function handleLogout() {
+                showLoader();
+                await supabase.auth.signOut();
+                if (realtimeChannel) {
+                    supabase.removeChannel(realtimeChannel);
+                    realtimeChannel = null;
+                }
+                loginScreen.style.display = 'flex';
+                adminApp.style.display = 'none';
+                if (revenueChart) {
+                    revenueChart.destroy();
+                    revenueChart = null;
+                }
+                hideLoader();
+            }
+
+            // ENHANCEMENT: Password Toggle
+            function togglePasswordVisibility() {
+                const iconEye = togglePasswordBtn.querySelector('.icon-eye');
+                const iconEyeOff = togglePasswordBtn.querySelector('.icon-eye-off');
+                
+                if (loginPasswordInput.type === 'password') {
+                    loginPasswordInput.type = 'text';
+                    if (iconEye) iconEye.classList.add('hidden');
+                    if (iconEyeOff) iconEyeOff.classList.remove('hidden');
+                } else {
+                    loginPasswordInput.type = 'password';
+                    if (iconEye) iconEye.classList.remove('hidden');
+                    if (iconEyeOff) iconEyeOff.classList.add('hidden');
+                }
+            }
+
+            // --- Theme, 3D, Navigation (Unchanged from original) ---
+            function updateChartColors() {
+                if (!revenueChart) return; 
+                const isDarkMode = document.documentElement.classList.contains('dark');
+                const gridColor = isDarkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)';
+                const labelColor = isDarkMode ? '#f8fafc' : '#1a1a1a';
+                revenueChart.options.scales.y.ticks.color = labelColor;
+                revenueChart.options.scales.y.grid.color = gridColor;
+                revenueChart.options.scales.x.ticks.color = labelColor;
+                revenueChart.options.scales.x.grid.color = gridColor;
+                revenueChart.options.plugins.legend.labels.color = labelColor;
+                revenueChart.update();
+            }
+            function applyTheme(theme) {
+                if (theme === 'dark') {
+                    document.documentElement.classList.add('dark');
+                    sunIcon.classList.remove('hidden');
+                    moonIcon.classList.add('hidden');
+                } else {
+                    document.documentElement.classList.remove('dark');
+                    sunIcon.classList.add('hidden');
+                    moonIcon.classList.remove('hidden');
+                }
+                updateChartColors();
+            }
+            function toggleTheme() {
+                const newTheme = document.documentElement.classList.contains('dark') ? 'light' : 'dark';
+                localStorage.setItem('theme', newTheme);
+                applyTheme(newTheme);
+            }
+            function initializeTheme() {
+                const savedTheme = localStorage.getItem('theme') || 'dark'; // Default to dark
+                applyTheme(savedTheme);
+            }
+            themeToggle.addEventListener('click', toggleTheme);
+            initializeTheme();
+            
+            function openMobileMenu() {
+                adminSidebar.classList.add('sidebar-open');
+                sidebarOverlay.classList.remove('hidden');
+            }
+            function closeMobileMenu() {
+                adminSidebar.classList.remove('sidebar-open');
+                sidebarOverlay.classList.add('hidden');
+            }
+            mobileMenuBtn.addEventListener('click', openMobileMenu);
+            sidebarOverlay.addEventListener('click', closeMobileMenu);
+            
+            // 3D for Admin Panel
+            function init3D() {
+                if (!window.THREE) return; 
+                try {
+                    scene = new THREE.Scene();
+                    camera = new THREE.PerspectiveCamera(75, canvas.clientWidth / canvas.clientHeight, 0.1, 1000);
+                    camera.position.z = 5;
+                    renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true });
+                    renderer.setSize(canvas.clientWidth, canvas.clientHeight);
+                    renderer.setPixelRatio(window.devicePixelRatio);
+                    const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+                    scene.add(ambientLight);
+                    const pointLight = new THREE.PointLight(0xf59e0b, 1.5, 100);
+                    pointLight.position.set(5, 5, 5);
+                    scene.add(pointLight);
+                    const geometry = new THREE.IcosahedronGeometry(1.5, 0);
+                    const material = new THREE.MeshStandardMaterial({
+                        color: 0xf59e0b,
+                        roughness: 0.2,
+                        metalness: 0.8,
+                        transparent: true,
+                        opacity: 0.7,
+                    });
+                    crystal = new THREE.Mesh(geometry, material);
+                    scene.add(crystal);
+                    animate3D();
+                } catch (e) {
+                    console.error("Error initializing 3D scene:", e);
+                    canvas.style.display = 'none'; // Hide canvas if it fails
+                }
+            }
+            function animate3D() {
+                if (!renderer || !crystal) return;
+                requestAnimationFrame(animate3D);
+                crystal.rotation.x += 0.002;
+                crystal.rotation.y += 0.003;
+                renderer.render(scene, camera);
+            }
+
+            // ENHANCEMENT: 3D for Login Screen
+            function initLogin3D() {
+                if (!window.THREE || !loginCanvas) return;
+                try {
+                    loginScene = new THREE.Scene();
+                    loginCamera = new THREE.PerspectiveCamera(75, loginCanvas.clientWidth / loginCanvas.clientHeight, 0.1, 1000);
+                    loginCamera.position.z = 5;
+
+                    loginRenderer = new THREE.WebGLRenderer({ canvas: loginCanvas, antialias: true, alpha: true });
+                    loginRenderer.setSize(loginCanvas.clientWidth, loginCanvas.clientHeight);
+                    loginRenderer.setPixelRatio(window.devicePixelRatio);
+
+                    const ambientLight = new THREE.AmbientLight(0xffffff, 0.2);
+                    loginScene.add(ambientLight);
+                    const pointLight = new THREE.PointLight(0xf59e0b, 1, 100);
+                    pointLight.position.set(-5, -5, 5);
+                    loginScene.add(pointLight);
+                    const pointLight2 = new THREE.PointLight(0xffffff, 0.5, 100);
+                    pointLight2.position.set(5, 5, 5);
+                    loginScene.add(pointLight2);
+
+                    const geometry = new THREE.IcosahedronGeometry(3, 0); // Bigger
+                    const material = new THREE.MeshStandardMaterial({
+                        color: 0xffffff, // White
+                        roughness: 0.1,
+                        metalness: 0.9,
+                        transparent: true,
+                        opacity: 0.15, // More subtle
+                    });
+                    loginCrystal = new THREE.Mesh(geometry, material);
+                    loginScene.add(loginCrystal);
+                    
+                    animateLogin3D();
+                } catch (e) {
+                    console.error("Error initializing Login 3D scene:", e);
+                    loginCanvas.style.display = 'none'; // Hide canvas if it fails
+                }
+            }
+            function animateLogin3D() {
+                if (!loginRenderer || !loginCrystal) return;
+                requestAnimationFrame(animateLogin3D);
+                loginCrystal.rotation.x += 0.001; // Slower
+                loginCrystal.rotation.y += 0.001; // Slower
+                loginRenderer.render(loginScene, loginCamera);
+            }
+
+            
+            function navigateToPage(pageId) {
+                pages.forEach(page => page.classList.remove('active'));
+                const targetPage = document.getElementById(`${pageId}-page`);
+                if (targetPage) {
+                    targetPage.classList.add('active');
+                } else {
+                    document.getElementById('dashboard-page').classList.add('active'); // Fallback
+                }
+                sidebarLinks.forEach(link => {
+                    link.classList.toggle('active', link.dataset.page === pageId);
+                });
+                window.scrollTo(0, 0);
+                closeMobileMenu(); // Close menu after navigation
+            }
+            sidebarLinks.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    navigateToPage(e.currentTarget.dataset.page);
+                });
+            });
+
+            // --- SUPABASE: Re-written loadData function ---
+            async function loadData() {
+                showLoader();
+                try {
+                    // Fetch all data in parallel
+                    const [statsRes, productsRes, ordersRes, testimonialsRes] = await Promise.all([
+                        supabase.rpc('get_dashboard_stats'),
+                        supabase.from('products').select('*').order('created_at', { ascending: false }),
+                        supabase.from('orders').select('*').order('order_date', { ascending: false }),
+                        supabase.from('testimonials').select('*').order('created_at', { ascending: false })
+                    ]);
+
+                    // Check for errors
+                    if (statsRes.error) throw new Error(`Stats Error: ${statsRes.error.message}`);
+                    if (productsRes.error) throw new Error(`Products Error: ${productsRes.error.message}`);
+                    if (ordersRes.error) throw new Error(`Orders Error: ${ordersRes.error.message}`);
+                    if (testimonialsRes.error) throw new Error(`Testimonials Error: ${testimonialsRes.error.message}`);
+
+                    // Store data
+                    allProducts = productsRes.data;
+                    allOrders = ordersRes.data;
+                    allTestimonials = testimonialsRes.data;
+
+                    // Render
+                    if (statsRes.data && statsRes.data.success) {
+                        const statsData = statsRes.data;
+                        renderDashboard(statsData.stats, allOrders);
+                        if (statsData.chartData) {
+                            renderRevenueChart(statsData.chartData);
+                        }
+                        if (statsData.topProducts) {
+                            renderTopProducts(statsData.topProducts);
+                        }
+                    } else {
+                        // Fallback if RPC fails but others work
+                        console.warn("Could not get dashboard stats, rendering tables only.");
+                        renderDashboard(
+                            { total_revenue: 0, total_orders: allOrders.length, total_products: allProducts.length, total_testimonials: allTestimonials.length },
+                            allOrders
+                        );
+                        renderRevenueChart([]);
+                        renderTopProducts([]);
+                    }
+                    
+                    renderInventoryTable(allProducts);
+                    renderOrdersTable(allOrders);
+                    renderTestimonialsTable(allTestimonials);
+
+                } catch (error) {
+                    console.error("Error loading data:", error);
+                    showToast(`Error loading data: ${error.message}`, true);
+                } finally {
+                    hideLoader();
+                }
+            }
+
+            // --- Render Functions (Unchanged, they just consume JSON) ---
+            function renderDashboard(stats, orders) {
+                document.getElementById('stat-total-revenue').textContent = `GH₵${parseFloat(stats.total_revenue || 0).toFixed(2)}`;
+                document.getElementById('stat-total-orders').textContent = stats.total_orders || 0;
+                document.getElementById('stat-total-products').textContent = stats.total_products || 0;
+                document.getElementById('stat-total-testimonials').textContent = stats.total_testimonials || 0;
+                
+                const dashboardOrdersTable = document.getElementById('dashboard-orders-table');
+                dashboardOrdersTable.innerHTML = '';
+                
+                if(!orders || orders.length === 0) {
+                     dashboardOrdersTable.innerHTML = `<tr><td colspan="4" class="p-3 text-center text-muted">No recent orders.</td></tr>`;
+                     return;
+                }
+                const recentOrders = orders.slice(0, 5); // Get 5 newest
+                recentOrders.forEach(order => {
+                    const row = `
+                        <tr class="border-b transition-colors duration-200" style="border-color: var(--border-card);">
+                            <td class="p-3 font-semibold">${order.order_id_text}</td>
+                            <td class="p-3">${order.customer_name}</td>
+                            <td class="p-3">GH₵${parseFloat(order.total).toFixed(2)}</td>
+                            <td class="p-3">
+                                <span class="px-2 py-1 rounded-full text-xs font-semibold" style="${getStatusBadgeStyle(order.status)}">
+                                    ${order.status}
+                                </span>
+                            </td>
+                        </tr>
+                    `;
+                    dashboardOrdersTable.innerHTML += row;
+                });
+            }
+            function renderRevenueChart(chartData) {
+                if (!chartData) return;
+                const ctx = document.getElementById('revenue-chart').getContext('2d');
+                if (revenueChart) {
+                    revenueChart.destroy();
+                }
+                const labels = chartData.map(d => d.sale_date);
+                const data = chartData.map(d => d.daily_revenue);
+                const isDarkMode = document.documentElement.classList.contains('dark');
+                const gridColor = isDarkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)';
+                const labelColor = isDarkMode ? '#f8fafc' : '#1a1a1a';
+                revenueChart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Daily Revenue',
+                            data: data,
+                            backgroundColor: 'rgba(245, 158, 11, 0.2)',
+                            borderColor: 'rgba(245, 158, 11, 1)',
+                            borderWidth: 2,
+                            fill: true,
+                            tension: 0.3
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: { beginAtZero: true, ticks: { color: labelColor }, grid: { color: gridColor } },
+                            x: { ticks: { color: labelColor }, grid: { color: gridColor } }
+                        },
+                        plugins: { legend: { labels: { color: labelColor } } }
+                    }
+                });
+            }
+            function renderTopProducts(products) {
+                const list = document.getElementById('top-products-list');
+                list.innerHTML = '';
+                if (!products || products.length === 0) {
+                    list.innerHTML = `<li class="p-3 text-center text-muted">No sales data yet.</li>`;
+                    return;
+                }
+                products.forEach(product => {
+                    list.innerHTML += `
+                        <li class="flex justify-between items-center p-2 border-b" style="border-color: var(--border-card);">
+                            <span class="truncate">${product.name}</span>
+                            <span class="font-bold text-amber">${product.total_sold} sold</span>
+                        </li>
+                    `;
+                });
+            }
+            function renderInventoryTable(products) {
+                const inventoryTable = document.getElementById('inventory-table');
+                inventoryTable.innerHTML = '';
+                if(!products || products.length === 0) {
+                     inventoryTable.innerHTML = `<tr><td colspan="5" class="p-3 text-center text-muted">No products found. Add one!</td></tr>`;
+                     return;
+                }
+                products.forEach(product => {
+                    const row = `
+                        <tr class="border-b transition-colors duration-200" style="border-color: var(--border-card);">
+                            <td class="p-3">
+                                <img src="${product.image}" alt="${product.name}" class="w-12 h-12 object-cover rounded-md" onerror="this.src='https://placehold.co/48x48/1a1a1a/f59e0b?text=N/A'">
+                            </td>
+                            <td class="p-3 font-semibold">${product.name}</td>
+                            <td class="p-3">${product.category}</td>
+                            <td class="p-3">GH₵${parseFloat(product.price).toFixed(2)}</td>
+                            <td class="p-3 space-x-2">
+                                <button class="edit-product-btn p-1 text-blue-500 hover:text-blue-700" data-id="${product.id}">
+                                    <i data-feather="edit" class="w-5 h-5"></i>
+                                </button>
+                                <button class="delete-product-btn p-1 text-red-500 hover:text-red-700" data-id="${product.id}">
+                                    <i data-feather="trash-2" class="w-5 h-5"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                    inventoryTable.innerHTML += row;
+                });
+                feather.replace();
+            }
+            function renderOrdersTable(orders) {
+                const ordersTable = document.getElementById('orders-table');
+                ordersTable.innerHTML = '';
+                if(!orders || orders.length === 0) {
+                     ordersTable.innerHTML = `<tr><td colspan="7" class="p-3 text-center text-muted">No orders found.</td></tr>`;
+                     return;
+                }
+                orders.forEach(order => {
+                    const orderDate = new Date(order.order_date).toLocaleDateString();
+                    const row = `
+                        <tr class="border-b transition-colors duration-200" style="border-color: var(--border-card);">
+                            <td class="p-3 font-semibold">${order.order_id_text}</td>
+                            <td class="p-3">${orderDate}</td>
+                            <td class="p-3">${order.customer_name}</td>
+                            <td class="p-3">${order.customer_phone}</td>
+                            <td class="p-3">GH₵${parseFloat(order.total).toFixed(2)}</td>
+                            <td class="p-3">
+                                <select class="status-select bg-input p-1 rounded-md" data-id="${order.id}">
+                                    <option value="Order Placed" ${order.status === 'Order Placed' ? 'selected' : ''}>Order Placed</option>
+                                    <option value="Processing" ${order.status === 'Processing' ? 'selected' : ''}>Processing</option>
+                                    <option value="Shipped" ${order.status === 'Shipped' ? 'selected' : ''}>Shipped</option>
+                                    <option value="Delivered" ${order.status === 'Delivered' ? 'selected' : ''}>Delivered</option>
+                                    <option value="Cancelled" ${order.status === 'Cancelled' ? 'selected' : ''}>Cancelled</option>
+                                </select>
+                            </td>
+                            <td class="p-3">
+                                <button class="view-order-btn p-1 text-blue-500 hover:text-blue-700" data-id="${order.id}">
+                                    View Details
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                    ordersTable.innerHTML += row;
+                });
+            }
+            function renderTestimonialsTable(testimonials) {
+                const testimonialsTable = document.getElementById('testimonials-table');
+                testimonialsTable.innerHTML = '';
+                if(!testimonials || testimonials.length === 0) {
+                     testimonialsTable.innerHTML = `<tr><td colspan="4" class="p-3 text-center text-muted">No testimonials found.</td></tr>`;
+                     return;
+                }
+                testimonials.forEach(testimonial => {
+                    const reviewDate = testimonial.created_at ? new Date(testimonial.created_at).toLocaleDateString() : 'N/A';
+                    const row = `
+                        <tr class="border-b transition-colors duration-200" style="border-color: var(--border-card);">
+                            <td class="p-3 font-semibold">${testimonial.name}</td>
+                            <td class="p-3 text-sm text-muted max-w-sm truncate" title="${testimonial.comment}">${testimonial.comment}</td>
+                            <td class="p-3">${reviewDate}</td>
+                            <td class="p-3">
+                                <button class="delete-testimonial-btn p-1 text-red-500 hover:text-red-700" data-id="${testimonial.id || 0}">
+                                    <i data-feather="trash-2" class="w-5 h-5"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                    testimonialsTable.innerHTML += row;
+                });
+                feather.replace();
+            }
+            function getStatusBadgeStyle(status) {
+                switch (status) {
+                    case 'Order Placed': return 'background-color: #3B82F6; color: #fff;';
+                    case 'Shipped': return 'background-color: #6366F1; color: #fff;';
+                    case 'Delivered': return 'background-color: #10B981; color: #fff;';
+                    case 'Cancelled': return 'background-color: #EF4444; color: #fff;';
+                    case 'Processing':
+                    default:
+                        return 'background-color: #F59E0B; color: #000;';
+                }
+            }
+
+            // --- Modal Controls (Unchanged) ---
+            function openProductModal(isEdit = false, product = null) {
+                productForm.reset();
+                if (isEdit && product) {
+                    modalTitle.textContent = "Edit Product";
+                    currentEditProductId = product.id;
+                    document.getElementById('product-id').value = product.id;
+                    document.getElementById('product-name').value = product.name;
+                    document.getElementById('product-price').value = product.price;
+                    document.getElementById('product-category').value = product.category;
+                    document.getElementById('product-image').value = product.image; // Keep full URL
+                    document.getElementById('product-description').value = product.description;
+                    document.getElementById('product-ingredients').value = product.ingredients;
+                    document.getElementById('product-longevity').value = product.longevity;
+                    document.getElementById('product-new-arrival').checked = !!product.new_arrival;
+                } else {
+                    modalTitle.textContent = "Add New Product";
+                    currentEditProductId = 0;
+                    document.getElementById('product-id').value = 0;
+                }
+                productModal.style.display = 'block';
+            }
+            function closeProductModal() { productModal.style.display = 'none'; }
+            function openOrderModal() { orderDetailsModal.style.display = 'block'; }
+            function closeOrderModal() { orderDetailsModal.style.display = 'none'; }
+            addProductBtn.addEventListener('click', () => openProductModal(false));
+            closeModalBtn.addEventListener('click', closeProductModal);
+            closeOrderModalBtn.addEventListener('click', closeOrderModal);
+            window.addEventListener('click', (e) => {
+                if (e.target === productModal) closeProductModal();
+                if (e.target === orderDetailsModal) closeOrderModal();
+            });
+
+            // --- SUPABASE: Re-written Form Handling (CRUD) ---
+            
+            // Add/Edit Product
+            productForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                showLoader();
+                const isEdit = currentEditProductId > 0;
+                
+                const productData = {
+                    name: document.getElementById('product-name').value,
+                    price: parseFloat(document.getElementById('product-price').value),
+                    category: document.getElementById('product-category').value,
+                    image: document.getElementById('product-image').value,
+                    description: document.getElementById('product-description').value,
+                    ingredients: document.getElementById('product-ingredients').value,
+                    longevity: document.getElementById('product-longevity').value,
+                    new_arrival: document.getElementById('product-new-arrival').checked,
+                };
+                
+                try {
+                    let error;
+                    if (isEdit) {
+                        // Update
+                        const { error: updateError } = await supabase
+                            .from('products')
+                            .update(productData)
+                            .eq('id', currentEditProductId);
+                        error = updateError;
+                    } else {
+                        // Insert
+                        const { error: insertError } = await supabase
+                            .from('products')
+                            .insert(productData);
+                        error = insertError;
+                    }
+                    if (error) throw error;
+                    
+                    showToast(`Product ${isEdit ? 'updated' : 'saved'}!`);
+                    closeProductModal();
+                    loadData(); // Refresh all data
+                } catch (error) {
+                    showToast(`Error saving product: ${error.message}`, true);
+                } finally {
+                    hideLoader();
+                }
+            });
+
+            // Handle Clicks on Tables (Edit/Delete/View)
+            document.addEventListener('click', async (e) => {
+                // Edit Product
+                if (e.target.closest('.edit-product-btn')) {
+                    const id = parseInt(e.target.closest('.edit-product-btn').dataset.id);
+                    const productToEdit = allProducts.find(p => p.id === id);
+                    if (productToEdit) {
+                        openProductModal(true, productToEdit);
+                    }
+                }
+                
+                // Delete Product
+                if (e.target.closest('.delete-product-btn')) {
+                    const id = parseInt(e.target.closest('.delete-product-btn').dataset.id);
+                    if (confirm('Are you sure you want to delete this product? This cannot be undone.')) {
+                        showLoader();
+                        try {
+                            const { error } = await supabase
+                                .from('products')
+                                .delete()
+                                .eq('id', id);
+                            if (error) throw error;
+                            showToast('Product deleted.');
+                            loadData(); // Refresh all data
+                        } catch (error) {
+                            showToast(`Error: ${error.message}`, true);
+                        } finally {
+                            hideLoader();
+                        }
+                    }
+                }
+                
+                // View Order Details
+                if (e.target.closest('.view-order-btn')) {
+                    const id = parseInt(e.target.closest('.view-order-btn').dataset.id);
+                    showLoader();
+                    try {
+                        // Fetch order and items
+                        const { data: order, error: orderError } = await supabase
+                            .from('orders')
+                            .select('*')
+                            .eq('id', id)
+                            .single();
+                        if (orderError) throw orderError;
+                        
+                        const { data: items, error: itemsError } = await supabase
+                            .from('order_items')
+                            .select('*')
+                            .eq('order_id', id);
+                        if (itemsError) throw itemsError;
+
+                        document.getElementById('order-modal-title').textContent = `Order Details: ${order.order_id_text}`;
+                        document.getElementById('order-customer-details').innerHTML = `
+                            <p><strong>Customer:</strong> ${order.customer_name}</p>
+                            <p><strong>Email:</strong> ${order.customer_email || 'N/A'}</p>
+                            <p><strong>Phone:</strong> ${order.customer_phone}</p>
+                            <p><strong>Address:</strong> ${order.customer_address}</p>
+                            <p><strong>Total:</strong> GH₵${parseFloat(order.total).toFixed(2)}</p>
+                        `;
+                        
+                        const itemsList = document.getElementById('order-items-list');
+                        itemsList.innerHTML = '';
+                        items.forEach(item => {
+                            itemsList.innerHTML += `
+                                <div class="flex items-center p-2 bg-input rounded-md">
+                                    <img src="${item.image || 'https://placehold.co/40x40/1a1a1a/f59e0b?text=N/A'}" class="w-10 h-10 rounded-md mr-3" onerror="this.src='https://placehold.co/40x40/1a1a1a/f59e0b?text=N/A'">
+                                    <div class="flex-1">
+                                        <p class="font-semibold">${item.name}</p>
+                                        <p class="text-sm text-muted">GH₵${parseFloat(item.price).toFixed(2)} x ${item.quantity}</p>
+
+                                    </div>
+                                    <p class="font-semibold">GH₵${(item.price * item.quantity).toFixed(2)}</p>
+                                </div>
+                            `;
+                        });
+                        
+                        openOrderModal();
+                    } catch (error) {
+                        showToast(`Error fetching order details: ${error.message}`, true);
+                    } finally {
+                        hideLoader();
+                    }
+                }
+                
+                // Delete Testimonial
+                if (e.target.closest('.delete-testimonial-btn')) {
+                    const id = parseInt(e.target.closest('.delete-testimonial-btn').dataset.id);
+                    if (id === 0) {
+                        showToast("Cannot delete testimonial: Invalid ID.", true);
+                        return;
+                    }
+                    if (confirm('Are you sure you want to delete this testimonial?')) {
+                         showLoader();
+                         try {
+                            const { error } = await supabase
+                                .from('testimonials')
+                                .delete()
+                                .eq('id', id);
+                            if (error) throw error;
+                            showToast('Testimonial deleted.');
+                            loadData(); // Refresh all data
+                        } catch (error) {
+                            showToast(`Error: ${error.message}`, true);
+                        } finally {
+                            hideLoader();
+                        }
+                    }
+                }
+            });
+            
+            // Handle Order Status Change
+            document.addEventListener('change', async (e) => {
+                if (e.target.classList.contains('status-select')) {
+                    const id = parseInt(e.target.dataset.id);
+                    const status = e.target.value;
+                    showLoader();
+                    
+                    try {
+                         // 1. Update the order table
+                         const { error: updateError } = await supabase
+                            .from('orders')
+                            .update({ status: status })
+                            .eq('id', id);
+                        if (updateError) throw updateError;
+                        
+                        // 2. Add a new entry to the history table
+                        const { error: historyError } = await supabase
+                            .from('order_status_history')
+                            .insert({ order_id: id, status: status });
+                        if (historyError) throw historyError;
+
+                        showToast('Order status updated.');
+                        loadData(); // Refresh data to show new statuses
+                    } catch (error) {
+                        showToast(`Error updating status: ${error.message}`, true);
+                    } finally {
+                        hideLoader();
+                    }
+                }
+            });
+
+            // --- Initial Load ---
+            loginForm.addEventListener('submit', handleLogin);
+            logoutButton.addEventListener('click', handleLogout);
+            togglePasswordBtn.addEventListener('click', togglePasswordVisibility); // ENHANCEMENT
+            
+            checkAuth(); // Check if user is already logged in on page load
+            initLogin3D(); // ENHANCEMENT: Start login 3D anim
+            
+            // --- SECURITY MEASURES (Inside DOMContentLoaded for access to showToast) ---
+            document.addEventListener('keydown', function(e) {
+                // Block Ctrl + U
+                if (e.ctrlKey && (e.key === 'u' || e.key === 'U')) {
+                    e.preventDefault();
+                    showToast('View Source is disabled.', true); // Show error toast
+                }
+                
+                // --- TERMINAL TOGGLE (Ctrl + `) ---
+                if (e.ctrlKey && e.key === '`') {
+                    e.preventDefault();
+                    toggleTerminal();
+                }
+            });
+
+            // Optional: Block Right Click
+            document.addEventListener('contextmenu', event => event.preventDefault());
+
+
+            // === TERMINAL LOGIC ===
+            function toggleTerminal() {
+                if (terminalOverlay.classList.contains('hidden')) {
+                    terminalOverlay.classList.remove('hidden');
+                    terminalInput.focus();
+                    appendToTerminal("Session started: " + new Date().toLocaleTimeString(), false);
+                } else {
+                    terminalOverlay.classList.add('hidden');
+                }
+            }
+
+            closeTerminalBtn.addEventListener('click', () => {
+                terminalOverlay.classList.add('hidden');
+            });
+            
+            // Allow closing by clicking outside
+            terminalOverlay.addEventListener('click', (e) => {
+                 if(e.target === terminalOverlay) {
+                     terminalOverlay.classList.add('hidden');
+                 }
+            });
+
+            // Command Processing
+            terminalInput.addEventListener('keydown', (e) => {
+                // Command History Navigation
+                if (e.key === 'ArrowUp') {
+                    e.preventDefault();
+                    if (commandHistory.length > 0 && historyIndex < commandHistory.length - 1) {
+                        historyIndex++;
+                        terminalInput.value = commandHistory[commandHistory.length - 1 - historyIndex];
+                    }
+                }
+                else if (e.key === 'ArrowDown') {
+                    e.preventDefault();
+                    if (historyIndex > 0) {
+                        historyIndex--;
+                        terminalInput.value = commandHistory[commandHistory.length - 1 - historyIndex];
+                    } else if (historyIndex === 0) {
+                        historyIndex = -1;
+                        terminalInput.value = "";
+                    }
+                }
+                else if (e.key === 'Enter') {
+                    const rawInput = terminalInput.value.trim();
+                    if (rawInput) {
+                        commandHistory.push(rawInput);
+                        historyIndex = -1; // Reset history index
+                        processCommand(rawInput);
+                    }
+                    terminalInput.value = ''; // Clear input
+                }
+            });
+            
+            // NEW: Real-time Monitor Functionality
+            function initRealtime() {
+                if (!supabase) return;
+                
+                // Subscribe to orders table for INSERT events
+                realtimeChannel = supabase
+                    .channel('public:orders')
+                    .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'orders' }, payload => {
+                        if (isMonitoring) {
+                            const time = new Date().toLocaleTimeString();
+                            const msg = `[REALTIME] ${time} - NEW ORDER: ${payload.new.order_id_text || 'ID#'+payload.new.id} | ${payload.new.customer_name}`;
+                            typeWriterEffect(msg, 'text-yellow-400');
+                            showToast("New Order Received!", false); // Also show a UI toast
+                            loadData(); // Auto-refresh dashboard data
+                        }
+                    })
+                    .subscribe((status) => {
+                        if (status === 'SUBSCRIBED') {
+                             appendToTerminal("[SYSTEM] Connected to Supabase Realtime Stream...", false);
+                        }
+                    });
+            }
+
+            function appendToTerminal(text, isCommand = false, colorClass = 'text-gray-300') {
+                const div = document.createElement('div');
+                if (isCommand) {
+                    div.innerHTML = `<span class="text-green-500 font-bold">➜</span> <span class="text-cyan-400 font-bold">~</span> <span class="text-white">${text}</span>`;
+                } else {
+                    div.className = `${colorClass} ml-4`;
+                    div.innerHTML = text; // Allow HTML in output
+                }
+                terminalOutput.appendChild(div);
+                terminalOutput.scrollTop = terminalOutput.scrollHeight; // Auto-scroll
+            }
+            
+            // NEW: Typewriter Effect for "Hacker" feel
+            function typeWriterEffect(text, colorClass = 'text-green-400') {
+                const div = document.createElement('div');
+                div.className = `${colorClass} ml-4 font-mono`;
+                terminalOutput.appendChild(div);
+                
+                let i = 0;
+                const speed = 15; // Speed in ms
+                
+                function type() {
+                    if (i < text.length) {
+                        div.textContent += text.charAt(i);
+                        i++;
+                        terminalOutput.scrollTop = terminalOutput.scrollHeight;
+                        setTimeout(type, speed);
+                    }
+                }
+                type();
+            }
+
+            function processCommand(cmd) {
+                appendToTerminal(cmd, true);
+                const args = cmd.split(' ');
+                const command = args[0].toLowerCase();
+
+                switch (command) {
+                    case 'help':
+                        appendToTerminal(`
+                            <span class="text-yellow-400 font-bold">Available Commands:</span><br>
+                            - <span class="text-white">stats</span>: Show dashboard key metrics.<br>
+                            - <span class="text-white">refresh</span>: Reload dashboard data.<br>
+                            - <span class="text-white">monitor [start|stop]</span>: Toggle realtime log stream.<br>
+                            - <span class="text-white">lock</span>: Immediately lock session (logout).<br>
+                            - <span class="text-white">date</span>: Show server time.<br>
+                            - <span class="text-white">goto &lt;page&gt;</span>: Navigate (dashboard, inventory, orders).<br>
+                            - <span class="text-white">theme</span>: Toggle Light/Dark mode.<br>
+                            - <span class="text-white">clear</span>: Clear terminal screen.<br>
+                        `);
+                        break;
+
+                    case 'clear':
+                        terminalOutput.innerHTML = '';
+                        break;
+                    
+                    case 'refresh':
+                        appendToTerminal("Refreshing data from Supabase...");
+                        loadData().then(() => typeWriterEffect("Data refreshed successfully."));
+                        break;
+
+                    case 'stats':
+                        const revenue = document.getElementById('stat-total-revenue').innerText;
+                        const orders = document.getElementById('stat-total-orders').innerText;
+                        appendToTerminal(`
+                            <span class="text-blue-400">--- SYSTEM STATS ---</span><br>
+                            Revenue: <span class="text-white">${revenue}</span><br>
+                            Orders: <span class="text-white">${orders}</span>
+                        `);
+                        break;
+                        
+                    case 'monitor':
+                        if (args[1] === 'stop') {
+                            isMonitoring = false;
+                            typeWriterEffect("Realtime monitoring PAUSED.", 'text-red-400');
+                        } else {
+                            isMonitoring = true;
+                            typeWriterEffect("Realtime monitoring STARTED. Waiting for events...", 'text-green-400');
+                        }
+                        break;
+                        
+                    case 'lock':
+                         typeWriterEffect("INITIATING LOCKDOWN SEQUENCE...", 'text-red-500 font-bold');
+                         setTimeout(() => {
+                             handleLogout();
+                             terminalOverlay.classList.add('hidden');
+                         }, 1000);
+                         break;
+                         
+                    case 'date':
+                        appendToTerminal(new Date().toString());
+                        break;
+
+                    case 'theme':
+                        toggleTheme();
+                        appendToTerminal("Theme toggled.");
+                        break;
+                    
+                    case 'logout': // Alias for lock basically
+                        appendToTerminal("Logging out...");
+                        setTimeout(() => {
+                            handleLogout();
+                            terminalOverlay.classList.add('hidden');
+                        }, 800);
+                        break;
+
+                    case 'goto':
+                        const page = args[1];
+                        if (['dashboard', 'inventory', 'orders', 'testimonials'].includes(page)) {
+                            navigateToPage(page);
+                            appendToTerminal(`Navigating to ${page}...`);
+                        } else {
+                            appendToTerminal(`<span class="text-red-400">Error: Unknown page '${page}'. Try: dashboard, inventory, orders</span>`);
+                        }
+                        break;
+
+                    default:
+                        appendToTerminal(`<span class="text-red-400">bash: ${command}: command not found</span>`);
+                        break;
+                }
+            }
+
+        }); // END of DOMContentLoaded
+        
+    </script>
+</body>
+
+</html>

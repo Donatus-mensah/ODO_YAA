@@ -1,0 +1,1706 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ODO YAA'S SIGNATURE</title>
+    
+    <!-- SECURITY SCRIPT: Blocks Ctrl+U, DevTools, & Save immediately (Preloading Phase) -->
+    <script>
+        (function() {
+            // Define the block function to be used in multiple listeners
+            function blockSource(e) {
+                // Check for Ctrl (Windows) or Meta (Mac Command key)
+                const isCtrl = e.ctrlKey || e.metaKey;
+                
+                // Block Ctrl + U (View Source)
+                if (isCtrl && (e.key === 'u' || e.key === 'U' || e.keyCode === 85)) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    // Try to log to our bash terminal if it exists
+                    if(window.logToBash) window.logToBash('SECURITY ALERT: View Source attempt [Ctrl+U] blocked.', 'error');
+                    return false;
+                }
+                
+                // Block Ctrl + Shift + I or J (DevTools)
+                if (isCtrl && e.shiftKey && (e.key === 'i' || e.key === 'I' || e.key === 'j' || e.key === 'J')) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    if(window.logToBash) window.logToBash('SECURITY ALERT: DevTools attempt blocked.', 'error');
+                    return false;
+                }
+
+                // Block Ctrl + S (Save Page)
+                if (isCtrl && (e.key === 's' || e.key === 'S')) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    if(window.logToBash) window.logToBash('SECURITY ALERT: Save Page attempt blocked.', 'warning');
+                    return false;
+                }
+                
+                // Block F12 (DevTools)
+                if (e.key === 'F12' || e.keyCode === 123) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    if(window.logToBash) window.logToBash('SECURITY ALERT: F12 DevTools blocked.', 'error');
+                    return false;
+                }
+            }
+
+            // 1. Preloading Phase: Capture events on the document immediately
+            document.addEventListener('keydown', blockSource, true); // 'true' = Capture phase
+
+            // 2. Block Right Click immediately
+            document.addEventListener('contextmenu', function(e) {
+                e.preventDefault();
+                if(window.logToBash) window.logToBash('MOUSE EVENT: Right-click context menu blocked.', 'warning');
+            }, true);
+            
+            // 3. Re-apply on window load to ensure it sticks
+            window.addEventListener('load', function() {
+                document.addEventListener('keydown', blockSource, true);
+            });
+        })();
+    </script>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Fira+Code:wght@400;600&display=swap"
+        rel="stylesheet">
+    <!-- FAVICON -->
+    <link rel="icon" type="image/png" href="https://ncfqnbztgxwjkpfggwlj.supabase.co/storage/v1/object/public/assets/branding/odo.jpg">
+    
+    <!-- SUPABASE: Updated Supabase Client Library -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <style>
+        /* * --- THEME VARIABLES --- */
+        :root {
+            --bg-color: #ffffff;
+            --text-color: #1a1a1a;
+            --text-color-muted: #4a4a4a;
+            --text-color-inverted: #f8fafc;
+            --text-color-amber: #d97706;
+            --text-color-logo: #0a0a0a;
+            --text-color-logo-amber: #f59e0b;
+
+            --bg-glass-effect: rgba(255, 255, 255, 0.5);
+            --border-glass-effect: rgba(0, 0, 0, 0.1);
+            
+            --bg-preloader: #ffffff;
+            --preloader-crystal: #f59e0b;
+            
+            --bg-card: #f9f9f9;
+            --border-card: #e0e0e0;
+            
+            --bg-input: #f0f0f0;
+            --border-input: #cccccc;
+            --input-focus-ring: #f59e0b;
+
+            --bg-section-muted: #f5f5f5;
+            
+            --bg-button: #f59e0b;
+            --text-button: #000000;
+            --bg-button-hover: #fca92b;
+
+            --scrollbar-track: #e0e0e0;
+            --scrollbar-thumb: #f59e0b;
+            --scrollbar-thumb-hover: #d97706;
+
+            --hero-image-brightness: brightness(0.9);
+            --hero-overlay-bg: rgba(255, 255, 255, 0.4);
+            --hero-text-color: #0a0a0a;
+            --hero-subtext-color: #333333;
+
+            --icon-color: #333333;
+            --icon-color-hover: #f59e0b;
+
+            /* Bash Terminal Variables */
+            --bash-bg: rgba(10, 10, 10, 0.95);
+            --bash-text: #00ff00;
+            --bash-border: #333;
+        }
+
+        html.dark {
+            --bg-color: #0a0a0a;
+            --text-color: #f8fafc;
+            --text-color-muted: #94a3b8;
+            --text-color-inverted: #1a1a1a;
+            --text-color-amber: #f59e0b;
+            --text-color-logo: #ffffff;
+            --text-color-logo-amber: #f59e0b;
+
+            --bg-glass-effect: rgba(10, 10, 10, 0.5);
+            --border-glass-effect: rgba(255, 255, 255, 0.1);
+
+            --bg-preloader: #0a0a0a;
+            --preloader-crystal: #f59e0b;
+
+            --bg-card: rgba(22, 32, 49, 0.5);
+            --border-card: rgba(51, 65, 85, 1);
+
+            --bg-input: rgba(30, 41, 59, 1);
+            --border-input: rgba(51, 65, 85, 1);
+            --input-focus-ring: #f59e0b;
+
+            --bg-section-muted: rgba(0, 0, 0, 0.2);
+
+            --bg-button: #f59e0b;
+            --text-button: #000000;
+            --bg-button-hover: #fca92b;
+
+            --scrollbar-track: #1a1a1a;
+            --scrollbar-thumb: #f59e0b;
+            --scrollbar-thumb-hover: #d97706;
+
+            --hero-image-brightness: brightness(0.6);
+            --hero-overlay-bg: rgba(0, 0, 0, 0.4);
+            --hero-text-color: #ffffff;
+            --hero-subtext-color: #d1d5db;
+            
+            --icon-color: #f8fafc;
+            --icon-color-hover: #f59e0b;
+        }
+
+        /* Custom Styles */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            overflow-x: hidden;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .logo-font {
+            font-family: 'Playfair Display', serif;
+        }
+
+        #canvas-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+
+        .glass-effect {
+            background-color: var(--bg-glass-effect);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border-glass-effect);
+            transition: background-color 0.3s ease, border-color 0.3s ease;
+        }
+
+        .nav-link.active {
+            color: var(--text-color-logo-amber);
+            position: relative;
+        }
+
+        .nav-link.active::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 6px;
+            height: 6px;
+            background-color: var(--text-color-logo-amber);
+            border-radius: 50%;
+        }
+
+        .page {
+            display: none;
+            animation: fadeIn 0.8s ease-in-out;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Bash Terminal Styles */
+        #bash-terminal {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 300px;
+            background-color: var(--bash-bg);
+            border-top: 2px solid var(--bash-border);
+            z-index: 10000; /* High Z-index to overlay everything */
+            font-family: 'Fira Code', monospace;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 -5px 20px rgba(0,0,0,0.5);
+            transition: transform 0.3s ease-in-out;
+            transform: translateY(100%); /* Hidden by default */
+        }
+
+        #bash-terminal.open {
+            transform: translateY(0);
+        }
+
+        .bash-header {
+            background-color: #1a1a1a;
+            padding: 8px 16px;
+            border-bottom: 1px solid var(--bash-border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: #888;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .bash-content {
+            flex: 1;
+            padding: 16px;
+            overflow-y: auto;
+            color: var(--bash-text);
+            font-size: 14px;
+        }
+        
+        .bash-line {
+            margin-bottom: 4px;
+            line-height: 1.4;
+            display: flex;
+        }
+        .bash-time {
+            color: #666;
+            margin-right: 12px;
+            min-width: 80px;
+        }
+        .bash-prompt {
+            color: #f59e0b;
+            margin-right: 8px;
+        }
+        .bash-msg-error { color: #ef4444; }
+        .bash-msg-warning { color: #f59e0b; }
+        .bash-msg-success { color: #10b981; }
+        .bash-msg-info { color: #3b82f6; }
+
+        /* Scrollbar styling */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: var(--scrollbar-track); }
+        ::-webkit-scrollbar-thumb { background: var(--scrollbar-thumb); border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--scrollbar-thumb-hover); }
+
+        /* Preloader */
+        #preloader {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-color: var(--bg-preloader);
+            z-index: 9999;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            transition: opacity 0.5s ease-out;
+        }
+
+        .loader-crystal {
+            width: 50px; height: 50px;
+            border: 4px solid var(--preloader-crystal);
+            border-radius: 8px;
+            animation: rotate 2s infinite linear;
+        }
+        
+        #preloader-text {
+            color: var(--preloader-crystal);
+            transition: color 0.3s ease;
+        }
+
+        @keyframes rotate {
+            0% { transform: rotate(0deg) scale(0.9); }
+            50% { transform: rotate(180deg) scale(1.0); }
+            100% { transform: rotate(360deg) scale(0.9); }
+        }
+
+        /* Hero Carousel specific styles */
+        #hero-carousel-container { position: relative; width: 100%; height: 100vh; }
+        #hero-carousel { position: absolute; top: 0; left: 0; width: 100%; height: 100%; overflow: hidden; z-index: 0; }
+        #hero-carousel img {
+            width: 100%; height: 100%; object-fit: cover; position: absolute; top: 0; left: 0;
+            opacity: 0; transition: opacity 1.5s ease-in-out; filter: var(--hero-image-brightness);
+        }
+        #hero-carousel img.active { opacity: 1; }
+        .content-overlay {
+            position: relative; z-index: 10; min-height: 100vh;
+            display: flex; flex-direction: column; justify-content: center; align-items: center; padding-top: 6rem;
+        }
+        .hero-content-box {
+            background-color: var(--hero-overlay-bg); backdrop-filter: blur(8px);
+            padding: 2rem; border-radius: 0.5rem; max-width: 48rem; transition: background-color 0.3s ease;
+        }
+        .hero-content-box h1 { color: var(--hero-text-color); }
+        .hero-content-box p { color: var(--hero-subtext-color); }
+        .hero-explore-btn { background-color: var(--bg-button); color: var(--text-button); }
+        .hero-explore-btn:hover { background-color: var(--bg-button-hover); }
+
+        .product-image { width: 100%; height: 200px; object-fit: cover; border-radius: 8px; margin-bottom: 12px; }
+        .category-card { transition: transform 0.3s ease; }
+        .category-card:hover { transform: translateY(-5px); }
+
+        #popup-message {
+            transition: transform 0.5s ease-out, opacity 0.5s ease-out;
+            transform: translateY(50px); opacity: 0;
+        }
+        #popup-message.popup-show { transform: translateY(0); opacity: 1; }
+        
+        .marquee-container {
+            -webkit-mask-image: linear-gradient(to right, transparent, black 20%, black 80%, transparent);
+            mask-image: linear-gradient(to right, transparent, black 20%, black 80%, transparent);
+        }
+        #marquee-content { animation: marquee 40s linear infinite; }
+        .marquee-container:hover #marquee-content { animation-play-state: paused; }
+        @keyframes marquee { from { transform: translateX(0%); } to { transform: translateX(-50%); } }
+        
+        /* Variables application */
+        .text-muted { color: var(--text-color-muted); }
+        .text-amber { color: var(--text-color-amber); }
+        .text-logo { color: var(--text-color-logo); }
+        .text-logo-amber { color: var(--text-color-logo-amber); }
+        .bg-card { background-color: var(--bg-card); border: 1px solid var(--border-card); transition: background-color 0.3s ease, border-color 0.3s ease; }
+        .bg-section-muted { background-color: var(--bg-section-muted); transition: background-color 0.3s ease; }
+        .bg-input {
+            background-color: var(--bg-input); color: var(--text-color); border: 1px solid var(--border-input);
+            transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+        }
+        .bg-input:focus { outline: none; box-shadow: 0 0 0 2px var(--input-focus-ring); border-color: transparent; }
+        .bg-button { background-color: var(--bg-button); color: var(--text-button); }
+        .bg-button:hover { background-color: var(--bg-button-hover); }
+        .icon-button { color: var(--icon-color); }
+        .icon-button:hover { color: var(--icon-color-hover); }
+        .nav-link { color: var(--text-color); }
+        .nav-link:hover { color: var(--text-color-logo-amber); }
+        html.dark .nav-link { color: #f8fafc; }
+        .nav-link-mobile { color: var(--text-color); }
+        .nav-link-mobile:hover { color: var(--text-color-logo-amber); }
+        .glass-effect .logo-span-1 { color: var(--text-color-logo); }
+        .glass-effect .logo-span-2 { color: var(--text-color-logo-amber); }
+    </style>
+</head>
+
+<body>
+
+    <!-- Preloader -->
+    <div id="preloader">
+        <div class="loader-crystal"></div>
+        <p id="preloader-text" class="mt-4 logo-font text-lg">Loading Signature...</p>
+    </div>
+
+    <!-- 3D Background Canvas -->
+    <div id="canvas-container"></div>
+    
+    <!-- REAL-TIME BASH TERMINAL (Hidden by default) -->
+    <div id="bash-terminal">
+        <div class="bash-header">
+            <span>Odo Yaa's System Terminal [v2.4.0] - Connected</span>
+            <span class="text-xs normal-case opacity-70">Press 'Ctrl + `' to toggle</span>
+        </div>
+        <div id="bash-content" class="bash-content">
+            <!-- Logs will be injected here -->
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header class="glass-effect shadow-md fixed top-0 left-0 right-0 z-50">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center py-4">
+                <!-- Logo -->
+                <a href="#home" class="text-3xl font-bold logo-font nav-link" data-page="home">
+                    <span class="logo-span-1">ODO</span>
+                    <span class="text-logo-amber logo-span-2"> YAA'S</span>
+                </a>
+
+                <!-- Desktop Navigation -->
+                <nav class="hidden md:flex items-center space-x-8 font-semibold text-sm uppercase tracking-wider">
+                    <a href="#home" class="nav-link hover:text-amber-400 transition-colors duration-300 active" data-page="home">Home</a>
+                    <a href="#categories" class="nav-link hover:text-amber-400 transition-colors duration-300" data-page="categories">Categories</a>
+                    <a href="#explore" class="nav-link hover:text-amber-400 transition-colors duration-300" data-page="explore">Explore</a>
+                    <a href="#locate-us" class="nav-link hover:text-amber-400 transition-colors duration-300" data-page="locate-us">Locate Us</a>
+                </nav>
+
+                <!-- Action Icons -->
+                <div class="flex items-center space-x-5">
+                    <button id="theme-toggle" class="icon-button transition-colors duration-300">
+                        <svg id="theme-icon-sun" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
+                        <svg id="theme-icon-moon" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" /></svg>
+                    </button>
+                    <button id="search-icon" class="icon-button transition-colors duration-300">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+                    </button>
+                    <a href="#cart" class="nav-link icon-button transition-colors duration-300 relative" data-page="cart">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" /></svg>
+                        <span id="cart-badge" class="absolute -top-2 -right-2 bg-amber-500 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center hidden">0</span>
+                    </a>
+                    <button id="mobile-menu-button" class="md:hidden icon-button transition-colors duration-300">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" /></svg>
+                    </button>
+                </div>
+            </div>
+            <!-- Search Dropdown -->
+            <div id="search-dropdown" class="hidden absolute right-0 mr-4 mt-2 p-4 bg-card rounded-lg shadow-xl z-20 w-64">
+                <input id="search-input" type="text" placeholder="Search for products..." class="w-full px-3 py-2 bg-input rounded-md focus:outline-none">
+                <button id="search-button" class="mt-2 w-full bg-button text-button py-2 rounded-md hover:bg-button-hover transition-colors duration-300 font-semibold">Search</button>
+            </div>
+        </div>
+        <!-- Mobile Navigation -->
+        <div id="mobile-menu" class="hidden md:hidden p-4" style="background-color: var(--bg-card); border-bottom: 1px solid var(--border-card);">
+            <nav class="flex flex-col space-y-4 text-center">
+                <a href="#home" class="nav-link-mobile hover:text-amber-400 transition-colors duration-300 active" data-page="home">Home</a>
+                <a href="#categories" class="nav-link-mobile hover:text-amber-400 transition-colors duration-300" data-page="categories">Categories</a>
+                <a href="#explore" class="nav-link-mobile hover:text-amber-400 transition-colors duration-300" data-page="explore">Explore</a>
+                <a href="#locate-us" class="nav-link-mobile hover:text-amber-400 transition-colors duration-300" data-page="locate-us">Locate Us</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="relative pt-16">
+        <!-- Home Page -->
+        <div id="home-page" class="page active">
+            <div id="hero-carousel-container">
+                <div id="hero-carousel"></div>
+                <div class="container mx-auto px-4 sm:px-6 lg:px-8 text-center content-overlay">
+                    <div class="hero-content-box">
+                        <h1 class="text-5xl md:text-7xl font-bold logo-font mb-4 leading-tight">Crafting Your Signature Scent</h1>
+                        <p class="text-lg md:text-xl mb-8">Discover a world of premium fragrances, where every bottle tells a unique story.</p>
+                        <div class="flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-4 mb-8">
+                            <a href="#explore" class="hero-explore-btn font-bold py-3 px-8 rounded-full text-lg transition-all duration-300 transform hover:scale-105 inline-block nav-link" data-page="explore">Explore Collection</a>
+                             <a href="#new-arrivals" class="bg-white/70 text-gray-800 font-bold py-3 px-8 rounded-full text-lg transition-all duration-300 transform hover:scale-105 inline-block nav-link" data-page="new-arrivals">Shop New Arrivals</a>
+                        </div>
+                         <p class="text-sm italic" style="color: var(--hero-subtext-color);">Free delivery on orders over GH₵500</p>
+                    </div>
+                </div>
+            </div>
+            <section id="featured-products" class="py-20 bg-section-muted">
+                <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                    <h2 class="text-4xl font-bold logo-font text-center mb-12">Featured Products</h2>
+                    <div id="featured-product-list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8"></div>
+                </div>
+            </section>
+            <section id="why-us" class="py-20">
+                <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                    <h2 class="text-4xl font-bold logo-font text-center mb-12">Why Choose Odo Yaa's</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-10 text-center">
+                        <div class="p-6">
+                            <div class="flex items-center justify-center h-16 w-16 rounded-full bg-amber-500/10 text-amber-400 mx-auto mb-4">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-gem h-8 w-8"><path d="M6 3h12l4 6-10 13L2 9Z" /><path d="M12 22V9" /><path d="m3.29 9 8.71 13 8.71-13" /></svg>
+                            </div>
+                            <h3 class="text-xl font-semibold logo-font mb-2">Premium Quality</h3>
+                            <p class="text-muted">We source the finest ingredients to create luxurious, long-lasting fragrances.</p>
+                        </div>
+                        <div class="p-6">
+                            <div class="flex items-center justify-center h-16 w-16 rounded-full bg-amber-500/10 text-amber-400 mx-auto mb-4">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-sparkles h-8 w-8"><path d="m12 3-1.9 5.8-5.8 1.9 5.8 1.9L12 18l1.9-5.8 5.8-1.9-5.8-1.9L12 3z" /><path d="M5 3v4" /><path d="M19 17v4" /><path d="M3 5h4" /><path d="M17 19h4" /></svg>
+                            </div>
+                            <h3 class="text-xl font-semibold logo-font mb-2">Unique Scents</h3>
+                            <p class="text-muted">Discover your signature scent from our exclusive and diverse collection.</p>
+                        </div>
+                        <div class="p-6">
+                            <div class="flex items-center justify-center h-16 w-16 rounded-full bg-amber-500/10 text-amber-400 mx-auto mb-4">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-shield-heart h-8 w-8"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10" /><path d="M14.5 9.1c-1.2-1.2-3.1-1.2-4.2 0-1.2 1.2-1.2 3.1 0 4.2.6.6 1.3.9 2.1.9s1.5-.3 2.1-.9c1.2-1.2 1.2-3.1 0-4.2" /></svg>
+                            </div>
+                            <h3 class="text-xl font-semibold logo-font mb-2">Exceptional Service</h3>
+                            <p class="text-muted">Our team is dedicated to helping you find the perfect fragrance.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <section id="testimonials" class="py-20 bg-section-muted overflow-hidden">
+                <div class="container mx-auto">
+                    <h2 class="text-4xl font-bold logo-font text-center mb-12">What Our Customers Say</h2>
+                    <div class="marquee-container relative h-48">
+                         <div id="marquee-content" class="flex absolute top-0 left-0"></div>
+                    </div>
+                    <div class="text-center mt-12">
+                        <button id="add-testimonial-btn" class="bg-button text-button font-semibold py-3 px-8 rounded-full hover:bg-button-hover transition-colors duration-300">Leave a Review</button>
+                    </div>
+                    <div id="testimonial-form-container" class="hidden mt-8 max-w-2xl mx-auto">
+                        <div id="testimonial-confirmation" class="hidden text-center bg-green-900/50 border border-green-700 p-4 rounded-lg mb-4">
+                            <p class="text-green-400">Thank you for your review!</p>
+                        </div>
+                        <form id="testimonial-form" class="space-y-4 bg-card p-8 rounded-lg">
+                            <h3 class="text-2xl font-semibold logo-font text-center mb-4">Share Your Experience</h3>
+                            <input type="text" id="testimonial-name" placeholder="Your Name" required class="w-full px-4 py-3 bg-input rounded-md">
+                            <textarea id="testimonial-comment" placeholder="Your review..." required rows="4" class="w-full px-4 py-3 bg-input rounded-md"></textarea>
+                            <button type="submit" class="w-full mt-4 bg-button text-button font-bold py-3 px-8 rounded-full text-lg hover:bg-button-hover transition-colors duration-300">Submit Review</button>
+                        </form>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- Categories Page -->
+        <div id="categories-page" class="page pt-16">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
+                <h2 class="text-4xl font-bold logo-font text-center mb-12">Shop by Category</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <div class="group relative overflow-hidden rounded-lg shadow-lg cursor-pointer category-card" data-category="For Him">
+                        <img src="https://ncfqnbztgxwjkpfggwlj.supabase.co/storage/v1/object/public/assets/products/for_him.jpg" alt="Men's Fragrances" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" onerror="this.src='https://placehold.co/600x400/1a1a1a/f59e0b?text=For+Him'">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
+                        <h3 class="absolute bottom-6 left-6 text-3xl font-bold logo-font text-white">For Him</h3>
+                    </div>
+                    <div class="group relative overflow-hidden rounded-lg shadow-lg cursor-pointer category-card" data-category="For Her">
+                        <img src="https://ncfqnbztgxwjkpfggwlj.supabase.co/storage/v1/object/public/assets/products/for_her.jpg" alt="Women's Fragrances" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" onerror="this.src='https://placehold.co/600x400/1a1a1a/f59e0b?text=For+Her'">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
+                        <h3 class="absolute bottom-6 left-6 text-3xl font-bold logo-font text-white">For Her</h3>
+                    </div>
+                    <div class="group relative overflow-hidden rounded-lg shadow-lg cursor-pointer category-card" data-category="Unisex">
+                        <img src="https://ncfqnbztgxwjkpfggwlj.supabase.co/storage/v1/object/public/assets/products/unisex.jpg" alt="Unisex Fragrances" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" onerror="this.src='https://placehold.co/600x400/1a1a1a/f59e0b?text=Unisex'">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
+                        <h3 class="absolute bottom-6 left-6 text-3xl font-bold logo-font text-white">Unisex</h3>
+                    </div>
+                    <div class="group relative overflow-hidden rounded-lg shadow-lg cursor-pointer category-card" data-category="Gift Sets">
+                        <img src="https://ncfqnbztgxwjkpfggwlj.supabase.co/storage/v1/object/public/assets/products/gift_set.jpg" alt="Gift Sets" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" onerror="this.src='https://placehold.co/600x400/1a1a1a/f59e0b?text=Gift+Sets'">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
+                        <h3 class="absolute bottom-6 left-6 text-3xl font-bold logo-font text-white">Gift Sets</h3>
+                    </div>
+                    <div class="group relative overflow-hidden rounded-lg shadow-lg cursor-pointer category-card" data-category="Skin Care">
+                        <img src="https://ncfqnbztgxwjkpfggwlj.supabase.co/storage/v1/object/public/assets/products/skin_care.jpg" alt="Skin Care" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" onerror="this.src='https://placehold.co/600x400/1a1a1a/f59e0b?text=Skin+Care'">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
+                        <h3 class="absolute bottom-6 left-6 text-3xl font-bold logo-font text-white">Skin Care</h3>
+                    </div>
+                    <div class="group relative overflow-hidden rounded-lg shadow-lg cursor-pointer category-card" data-category="For Kids">
+                        <img src="https://ncfqnbztgxwjkpfggwlj.supabase.co/storage/v1/object/public/assets/products/kids.jpg" alt="For Kids" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" onerror="this.src='https://placehold.co/600x400/1a1a1a/f59e0b?text=For+Kids'">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
+                        <h3 class="absolute bottom-6 left-6 text-3xl font-bold logo-font text-white">For Kids</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Explore Page -->
+        <div id="explore-page" class="page pt-16">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
+                <h2 class="text-4xl font-bold logo-font text-center mb-12">Our Collection</h2>
+                <div id="product-list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8"></div>
+            </div>
+        </div>
+        
+        <!-- Product Detail Page (PDP) -->
+        <div id="product-detail-page" class="page pt-16">
+             <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
+                <button id="back-to-explore-btn" class="mb-8 flex items-center text-lg text-muted hover:text-amber-400 transition-colors duration-300">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5 mr-2"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg>
+                    Back to Collection
+                </button>
+                <div id="product-detail-content" class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
+                    <div id="pdp-image-container" class="rounded-xl overflow-hidden shadow-2xl"></div>
+                    <div id="pdp-info-container">
+                        <h1 id="pdp-name" class="text-4xl md:text-5xl font-bold logo-font mb-2"></h1>
+                        <p id="pdp-category" class="text-lg text-amber uppercase tracking-widest mb-4"></p>
+                        <p id="pdp-price" class="text-4xl font-bold text-amber mb-6"></p>
+                         <div class="mb-8">
+                            <h3 class="text-xl font-semibold logo-font mb-3">Product Description</h3>
+                            <p id="pdp-description" class="text-muted leading-relaxed"></p>
+                        </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-8">
+                            <div class="bg-card p-5 rounded-lg">
+                                <h4 class="font-bold text-amber mb-2 flex items-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5 mr-2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>
+                                    Ingredients & Notes
+                                </h4>
+                                <p id="pdp-notes" class="text-sm text-muted"></p>
+                            </div>
+                            <div class="bg-card p-5 rounded-lg">
+                                 <h4 class="font-bold text-amber mb-2 flex items-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5 mr-2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                                    Scent Longevity
+                                </h4>
+                                <p id="pdp-longevity" class="text-sm text-muted"></p>
+                            </div>
+                        </div>
+                        <button id="pdp-add-to-cart-btn" class="add-to-cart-btn w-full bg-button text-button font-bold py-4 px-8 rounded-full text-lg hover:bg-button-hover transition-colors duration-300">Add to Bag</button>
+                    </div>
+                </div>
+             </div>
+        </div>
+        
+        <!-- New Arrivals Page -->
+        <div id="new-arrivals-page" class="page pt-16">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
+                <h2 class="text-4xl font-bold logo-font text-center mb-12">Freshly Crafted: New Arrivals</h2>
+                <div id="new-arrivals-list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8"></div>
+            </div>
+        </div>
+        
+        <!-- About Us Page -->
+        <div id="about-page" class="page pt-16">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
+                <div class="text-center">
+                    <h2 class="text-4xl font-bold logo-font mb-4">Our Story</h2>
+                    <p class="text-lg text-muted max-w-3xl mx-auto">Odo Yaa's Signature was born from a passion for the art of perfumery. Founded on the belief that a scent is a form of identity, we set out to create unique, high-quality fragrances that tell a story.</p>
+                </div>
+                <div class="my-20 grid md:grid-cols-2 gap-12 items-center">
+                    <div>
+                        <h3 class="text-3xl font-bold logo-font mb-4 text-amber">Our Mission & Values</h3>
+                        <p class="text-muted mb-6">To craft unforgettable sensory experiences through exceptional fragrances, combining tradition with modern innovation. We are committed to quality, sustainability, and celebrating individuality.</p>
+                        <ul class="space-y-4">
+                            <li class="flex items-start"><span class="text-amber mr-3 mt-1">✓</span> <span><strong>Quality:</strong> Using only the finest, ethically sourced ingredients.</span></li>
+                            <li class="flex items-start"><span class="text-amber mr-3 mt-1">✓</span> <span><strong>Craftsmanship:</strong> Meticulous attention to detail in every bottle.</span></li>
+                            <li class="flex items-start"><span class="text-amber mr-3 mt-1">✓</span> <span><strong>Customer Delight:</strong> Ensuring a personal and memorable experience for every customer.</span></li>
+                        </ul>
+                    </div>
+                    <div class="rounded-lg overflow-hidden shadow-2xl">
+                        <img src="https://placehold.co/600x400/1a1a1a/f59e0b?text=Our+Workshop" alt="Our Workshop" class="w-full h-full object-cover">
+                    </div>
+                </div>
+                <div class="text-center my-20">
+                    <h2 class="text-4xl font-bold logo-font mb-12">Meet The Team</h2>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                        <div class="bg-card p-6 rounded-lg text-center">
+                             <img src="https://ncfqnbztgxwjkpfggwlj.supabase.co/storage/v1/object/public/assets/branding/OY.jpg" alt="Founder" class="w-32 h-32 rounded-full mx-auto mb-4 border-2 border-amber-400" onerror="this.src='https://placehold.co/200x200/0a0a0a/f8fafc?text=O.Y.'">
+                             <h4 class="text-xl font-semibold logo-font">Odo Yaa</h4>
+                             <p class="text-amber mb-2">Founder & Chief Perfumer</p>
+                        </div>
+                         <div class="bg-card p-6 rounded-lg text-center">
+                             <img src="https://placehold.co/200x200/0a0a0a/f8fafc?text=K.B." alt="Lead Perfumer" class="w-32 h-32 rounded-full mx-auto mb-4 border-2 border-amber-400">
+                             <h4 class="text-xl font-semibold logo-font">K.B. Asante</h4>
+                             <p class="text-amber mb-2">Head of Production</p>
+                        </div>
+                         <div class="bg-card p-6 rounded-lg text-center">
+                             <img src="https://ncfqnbztgxwjkpfggwlj.supabase.co/storage/v1/object/public/assets/branding/donatus.jpg" alt="Customer Relations" class="w-32 h-32 rounded-full mx-auto mb-4 border-2 border-amber-400" onerror="this.src='https://placehold.co/200x200/0a0a0a/f8fafc?text=D.E.M.'">
+                             <h4 class="text-xl font-semibold logo-font">Dontus Ernest Mensah</h4>
+                             <p class="text-amber mb-2">Customer Experience Lead</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Careers Page -->
+        <div id="careers-page" class="page pt-16">
+             <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
+                 <div class="text-center">
+                    <h2 class="text-4xl font-bold logo-font mb-4">Join Our Signature Team</h2>
+                    <p class="text-lg text-muted max-w-3xl mx-auto">We are a team of passionate creators, storytellers, and innovators. If you share our love for fragrance and our commitment to excellence, we invite you to explore a career with us.</p>
+                </div>
+                 <div class="text-center my-20">
+                    <h2 class="text-4xl font-bold logo-font mb-12">Open Positions</h2>
+                    <div id="application-confirmation" class="hidden max-w-md mx-auto text-center bg-green-900/50 border border-green-700 p-6 rounded-lg mb-8">
+                        <p class="text-green-400">Thank you! Your application details are being opened in your email client.</p>
+                    </div>
+                    <div class="space-y-6 max-w-3xl mx-auto text-left">
+                        <div class="bg-card p-6 rounded-lg">
+                            <h3 class="text-xl font-semibold logo-font text-amber">Fragrance Consultant (Full-Time)</h3>
+                            <p class="text-muted mt-2">We're looking for an enthusiastic individual to guide our customers on their scent discovery journey.</p>
+                            <a href="#apply" data-page="application" data-job-title="Fragrance Consultant (Full-Time)" class="apply-now-btn nav-link inline-block mt-4 bg-button text-button font-semibold py-2 px-4 rounded-full hover:bg-button-hover transition-colors duration-300">Apply Now</a>
+                        </div>
+                         <div class="bg-card p-6 rounded-lg">
+                            <h3 class="text-xl font-semibold logo-font text-amber">Digital Marketing Specialist</h3>
+                            <p class="text-muted mt-2">Join our marketing team to grow our online presence. Experience with social media, content creation, and e-commerce is required.</p>
+                            <a href="#apply" data-page="application" data-job-title="Digital Marketing Specialist" class="apply-now-btn nav-link inline-block mt-4 bg-button text-button font-semibold py-2 px-4 rounded-full hover:bg-button-hover transition-colors duration-300">Apply Now</a>
+                        </div>
+                    </div>
+                 </div>
+             </div>
+        </div>
+
+        <!-- Application Page -->
+        <div id="application-page" class="page pt-16">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8 max-w-3xl py-12">
+                <button id="back-to-careers-btn" class="nav-link mb-8 flex items-center text-lg text-muted hover:text-amber-400 transition-colors duration-300" data-page="careers">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5 mr-2"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg>
+                    Back to Open Positions
+                </button>
+                 <div id="application-form">
+                     <h3 class="text-3xl font-bold logo-font mb-8 text-center">Apply Now</h3>
+                     <form id="career-application-form" class="space-y-4 bg-card p-8 rounded-lg">
+                         <div class="pt-2">
+                             <label for="career-job-title-display" class="block text-muted mb-2">Applying for:</label>
+                             <input id="career-job-title-display" type="text" readonly class="w-full px-4 py-3 bg-input rounded-md text-amber-400 font-semibold">
+                             <input type="hidden" id="career-job-title">
+                         </div>
+                         <input id="career-name" type="text" placeholder="Full Name" required class="w-full px-4 py-3 bg-input rounded-md">
+                         <input id="career-email" type="email" placeholder="Email Address" required class="w-full px-4 py-3 bg-input rounded-md">
+                         <div class="pt-2">
+                             <label for="career-resume" class="block text-muted mb-2">Upload Your Resume</label>
+                             <input id="career-resume" type="file" required class="w-full text-muted file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-button file:text-button hover:file:bg-button-hover"/>
+                             <p class="text-xs text-muted mt-2">Note: You will be asked to attach this file in the email client that opens.</p>
+                         </div>
+                         <textarea id="career-message" placeholder="Tell us why you're a great fit..." required rows="4" class="w-full px-4 py-3 bg-input rounded-md"></textarea>
+                         <button type="submit" class="w-full mt-4 bg-button text-button font-bold py-3 px-8 rounded-full text-lg hover:bg-button-hover transition-colors duration-300">Submit Application</button>
+                     </form>
+                 </div>
+            </div>
+        </div>
+
+        <!-- Cart Page -->
+        <div id="cart-page" class="page pt-16">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
+                <h2 class="text-4xl font-bold logo-font text-center mb-12">Your Shopping Bag</h2>
+                <div id="cart-items" class="bg-card p-6 rounded-lg"></div>
+                <div id="cart-summary" class="mt-8 text-right"></div>
+            </div>
+        </div>
+        
+        <!-- Checkout Page -->
+        <div id="checkout-page" class="page pt-16">
+             <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
+                <h2 class="text-4xl font-bold logo-font text-center mb-12">Checkout</h2>
+                <div id="order-confirmation" class="hidden text-center bg-green-900/50 border border-green-700 p-8 rounded-lg">
+                    <h3 class="text-3xl font-bold logo-font text-green-400 mb-4">Thank You For Your Order!</h3>
+                    <p class="text-slate-300 mb-6">Your order has been placed successfully and sent to our team via WhatsApp. Your Order ID is: <strong id="confirmed-order-id" class="text-amber-400"></strong>. Use this ID to track your shipment.</p>
+                    <a href="#home" class="bg-button text-button font-bold py-3 px-8 rounded-full text-lg hover:bg-button-hover transition-colors duration-300 nav-link" data-page="home">Continue Shopping</a>
+                </div>
+                <div id="details-confirmation" class="hidden bg-card p-8 rounded-lg">
+                    <h3 class="text-2xl font-semibold logo-font mb-6">Confirm Your Details</h3>
+                    <div id="confirmation-summary" class="space-y-3 text-muted border-b border-card pb-6 mb-6">
+                        <p><strong>Name:</strong> <span id="confirm-name"></span></p>
+                        <p><strong>Email:</strong> <span id="confirm-email"></span></p>
+                        <p><strong>Phone:</strong> <span id="confirm-phone"></span></p>
+                        <p><strong>Address:</strong> <span id="confirm-address" class="block whitespace-pre-wrap"></span></p>
+                    </div>
+                    <div class="mt-8 flex flex-col sm:flex-row justify-end gap-4">
+                        <button id="edit-details-btn" class="bg-slate-600 text-white font-bold py-3 px-8 rounded-full text-lg hover:bg-slate-500 transition-colors duration-300">Edit Details</button>
+                        <button id="confirm-order-btn" class="bg-green-600 text-white font-bold py-3 px-8 rounded-full text-lg hover:bg-green-700 transition-colors duration-300 flex items-center justify-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5 mr-2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 15 5 5 5-5"/><path d="M12 20v-7"/></svg>
+                            Confirm & Pay via WhatsApp
+                        </button>
+                    </div>
+                </div>
+                <div id="checkout-content" class="grid lg:grid-cols-2 gap-12">
+                    <div>
+                        <h3 class="text-2xl font-semibold logo-font mb-6">Delivery Details</h3>
+                        <form id="checkout-form" class="space-y-4">
+                             <input id="fullname" type="text" placeholder="Full Name" required class="w-full px-4 py-3 bg-input rounded-md">
+                             <input id="email" type="email" placeholder="Email Address" required class="w-full px-4 py-3 bg-input rounded-md">
+                             <input id="phone" type="tel" placeholder="Phone Number" required class="w-full px-4 py-3 bg-input rounded-md">
+                             <textarea id="address" placeholder="Delivery Address" required rows="3" class="w-full px-4 py-3 bg-input rounded-md"></textarea>
+                             <button type="submit" class="w-full mt-4 bg-button text-button font-bold py-3 px-8 rounded-full text-lg hover:bg-button-hover transition-colors duration-300">Proceed to Confirmation</button>
+                        </form>
+                    </div>
+                    <div id="checkout-summary-container" class="bg-card p-6 rounded-lg">
+                        <h3 class="text-2xl font-semibold logo-font mb-6">Order Summary</h3>
+                         <div id="checkout-summary"></div>
+                    </div>
+                </div>
+             </div>
+        </div>
+        
+        <!-- FAQs Page -->
+        <div id="faqs-page" class="page pt-16">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8 max-w-4xl py-12">
+                <h2 class="text-4xl font-bold logo-font text-center mb-12">Frequently Asked Questions</h2>
+                <div class="space-y-4">
+                    <details class="bg-card p-4 rounded-lg cursor-pointer"><summary class="font-semibold text-lg text-amber">What are your delivery options?</summary><p class="mt-4 text-muted">We offer standard and express delivery options. Standard delivery typically takes 1-2 business days.</p></details>
+                    <details class="bg-card p-4 rounded-lg cursor-pointer"><summary class="font-semibold text-lg text-amber">What is your return policy?</summary><p class="mt-4 text-muted">We accept returns within 30 days of purchase for a full refund, provided the item is unopened.</p></details>
+                    <details class="bg-card p-4 rounded-lg cursor-pointer"><summary class="font-semibold text-lg text-amber">How can I track my order?</summary><p class="mt-4 text-muted">Once your order is processed, you will receive an email with your Order ID.</p></details>
+                    <details class="bg-card p-4 rounded-lg cursor-pointer"><summary class="font-semibold text-lg text-amber">Are your products cruelty-free?</summary><p class="mt-4 text-muted">Yes, we are proud to be a cruelty-free brand.</p></details>
+                </div>
+            </div>
+        </div>
+
+        <!-- Terms & Conditions Page -->
+        <div id="terms-page" class="page pt-16">
+             <div class="container mx-auto px-4 sm:px-6 lg:px-8 max-w-4xl py-12">
+                <h2 class="text-4xl font-bold logo-font text-center mb-12">Terms & Conditions</h2>
+                <div class="space-y-8 text-muted">
+                    <div><h3 class="text-2xl font-semibold logo-font text-amber mb-3">1. Introduction</h3><p>Welcome to Odo Yaa's Signature. These terms and conditions outline the rules and regulations for the use of our website.</p></div>
+                    <div><h3 class="text-2xl font-semibold logo-font text-amber mb-3">2. Privacy Policy</h3><p>We are committed to protecting your privacy.</p></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Order Tracking Page -->
+        <div id="tracking-page" class="page pt-16">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8 max-w-2xl py-12">
+                <h2 class="text-4xl font-bold logo-font text-center mb-12">Track Your Order</h2>
+                <form id="tracking-form" class="flex items-center bg-card p-4 rounded-lg">
+                    <input id="order-id-input" type="text" placeholder="Enter Your Order ID (e.g., ODYS-123456)" required class="flex-grow px-4 py-3 bg-input rounded-l-md">
+                    <button type="submit" class="bg-button text-button font-bold py-3 px-6 rounded-r-md hover:bg-button-hover transition-colors duration-300">Track</button>
+                </form>
+                <div id="tracking-results" class="mt-8"></div>
+            </div>
+        </div>
+        
+        <!-- Privacy Policy Page -->
+        <div id="privacy-page" class="page pt-16">
+             <div class="container mx-auto px-4 sm:px-6 lg:px-8 max-w-4xl py-12">
+                <h2 class="text-4xl font-bold logo-font text-center mb-12">Privacy Policy</h2>
+                <div class="space-y-8 text-muted">
+                    <div><h3 class="text-xl font-semibold logo-font text-amber mb-3">Last Updated: 21 October 2025</h3><p>Odo Yaa's Signature is committed to protecting your privacy.</p></div>
+                    <div><h3 class="text-2xl font-semibold logo-font text-amber mb-3">Contact Us</h3><p>If you have questions or comments about this Privacy Policy, please contact us at: <a href="mailto:nyaa4266@gmail.com" class="text-amber hover:underline">nyaa4266@gmail.com</a></p></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Contact Us Page -->
+        <div id="contact-page" class="page pt-16">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8 max-w-4xl py-12">
+                <h2 class="text-4xl font-bold logo-font text-center mb-12">Get In Touch</h2>
+                <div id="contact-confirmation" class="hidden max-w-md mx-auto text-center bg-green-900/50 border border-green-700 p-6 rounded-lg mb-8">
+                    <p class="text-green-400">Thank you! Your message is being sent via WhatsApp.</p>
+                </div>
+                <div class="grid md:grid-cols-2 gap-12 items-start">
+                    <div>
+                        <h3 class="text-2xl font-semibold logo-font mb-6">Send Us a Message</h3>
+                        <form id="contact-form" class="space-y-4 bg-card p-8 rounded-lg">
+                            <input id="contact-name" type="text" placeholder="Your Name" required class="w-full px-4 py-3 bg-input rounded-md">
+                            <input id="contact-email" type="email" placeholder="Your Email" required class="w-full px-4 py-3 bg-input rounded-md">
+                            <textarea id="contact-message" placeholder="Your Message..." required rows="5" class="w-full px-4 py-3 bg-input rounded-md"></textarea>
+                            <button type="submit" class="w-full mt-4 bg-button text-button font-bold py-3 px-8 rounded-full text-lg hover:bg-button-hover transition-colors duration-300">Send Message</button>
+                        </form>
+                    </div>
+                    <div class="space-y-8 text-muted pt-4">
+                        <h3 class="text-2xl font-semibold logo-font mb-6" style="color: var(--text-color);">Contact Information</h3>
+                         <div><h4 class="font-semibold text-amber text-lg">Address</h4><p class="pl-8">OLD ESTATE SSNIT TRAFFIC -Koforidua, Ghana</p></div>
+                        <div><h4 class="font-semibold text-amber text-lg">Phone</h4><p class="pl-8">+233 54 020 3780</p></div>
+                        <div><h4 class="font-semibold text-amber text-lg">Email</h4><p class="pl-8"><a href="mailto:nyaa4266@gmail.com" class="hover:underline text-amber">nyaa4266@gmail.com</a></p></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Locate Us Page -->
+        <div id="locate-us-page" class="page pt-16">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
+                <h2 class="text-4xl font-bold logo-font text-center mb-12">Visit Our Signature Store</h2>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center bg-card p-8 rounded-lg">
+                    <div class="space-y-8">
+                        <div><img src="https://placehold.co/600x400/0a0a0a/f59e0b?text=ODO+YAA'S+STOREFRONT" alt="Odo Yaa's Storefront" class="rounded-lg shadow-xl w-full object-cover"></div>
+                        <div>
+                            <h3 class="text-2xl font-semibold logo-font text-amber mb-4">Store Details</h3>
+                            <div class="space-y-4 text-muted">
+                                <p class="flex items-start"><span class="text-amber mr-2">📍</span> <span>OLD ESTATE SSNIT TRAFFIC -Koforidua, Ghana</span></p>
+                                <p class="flex items-start"><span class="text-amber mr-2">📞</span> <span>+233 54 020 3780</span></p>
+                                 <p class="flex items-start"><span class="text-amber mr-2">📧</span> <a href="mailto:nyaa4266@gmail.com" class="hover:underline text-amber">nyaa4266@gmail.com</a></p>
+                            </div>
+                        </div>
+                        <div>
+                             <button id="get-directions-btn" class="w-full mt-4 bg-button text-button font-bold py-3 px-8 rounded-full text-lg hover:bg-button-hover transition-colors duration-300 flex items-center justify-center">Get Directions</button>
+                        </div>
+                    </div>
+                    <div class="h-96 lg:h-full w-full rounded-lg overflow-hidden">
+                        <iframe src="https://www.google.com/maps/embed?pb=!1m18!m12!1m3!1d480.06761737989615!2d-0.2768482514723241!3d6.088829161661174!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0xfdf4177e5643815%3A0x673dd6b90e838488!2sECPL%20Koforidua%20Retail!5e0!3m2!1sen!2sgh!4v1761069061683!5m2!1sen!2sgh" class="w-full h-full" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="glass-effect mt-auto">
+        <div class="container mx-auto px-8 py-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            <div>
+                <h3 class="font-bold text-lg mb-4 text-amber uppercase tracking-wider">Company</h3>
+                <a href="#about" class="nav-link block hover:text-amber-400 mb-2 transition-colors duration-300" data-page="about">About Us</a>
+                <a href="#careers" class="nav-link block hover:text-amber-400 mb-2 transition-colors duration-300" data-page="careers">Careers</a>
+                <a href="#contact" class="nav-link block hover:text-amber-400 mb-2 transition-colors duration-300" data-page="contact">Contact Us</a>
+            </div>
+            <div>
+                <h3 class="font-bold text-lg mb-4 text-amber uppercase tracking-wider">Help</h3>
+                <a href="#tracking" class="nav-link block hover:text-amber-400 mb-2 transition-colors duration-300" data-page="tracking">Order Tracking</a>
+                <a href="#faqs" class="nav-link block hover:text-amber-400 mb-2 transition-colors duration-300" data-page="faqs">FAQs</a>
+                <a href="#terms" class="nav-link block hover:text-amber-400 mb-2 transition-colors duration-300" data-page="terms">Terms &amp; Conditions</a>
+                <a href="#privacy" class="nav-link block hover:text-amber-400 mb-2 transition-colors duration-300" data-page="privacy">Privacy Policy</a>
+            </div>
+            <div>
+                <h3 class="font-bold text-lg mb-4 text-amber uppercase tracking-wider">Store</h3>
+                 <a href="#new-arrivals" class="nav-link block hover:text-amber-400 mb-2 transition-colors duration-300" data-page="new-arrivals">New Arrivals</a>
+                <a href="#categories" class="nav-link block hover:text-amber-400 mb-2 transition-colors duration-300" data-page="categories">Categories</a>
+                <a href="#explore" class="nav-link block hover:text-amber-400 mb-2 transition-colors duration-300" data-page="explore">Explore</a>
+            </div>
+            <div>
+                <h3 class="font-bold text-lg mb-4 text-amber uppercase tracking-wider">Follow Us</h3>
+                <p class="mb-4 text-muted">And get free delivery on all your orders!</p>
+                <div class="flex space-x-4">
+                    <a href="#" class="icon-button transition-colors duration-300"><img src="https://ncfqnbztgxwjkpfggwlj.supabase.co/storage/v1/object/public/assets/icons/facebook.png" alt="FB" class="w-6 h-6 rounded-full object-cover" onerror="this.src='https://placehold.co/24x24/3b5998/ffffff?text=f'"></a>
+                    <a href="https://www.instagram.com/ackon.nana?igsh=MXBqcHBxbml4bTloZg==" class="icon-button transition-colors duration-300"><img src="https://ncfqnbztgxwjkpfggwlj.supabase.co/storage/v1/object/public/assets/icons/instagram.png" alt="IG" class="w-6 h-6 rounded-full object-cover" onerror="this.src='https://placehold.co/24x24/E4405F/ffffff?text=I'"></a>
+                    <a href="https://www.tiktok.com/@abaackon_1?is_from_webapp=1&sender_device=pc" class="icon-button transition-colors duration-300"><img src="https://ncfqnbztgxwjkpfggwlj.supabase.co/storage/v1/object/public/assets/icons/tik-tok.png" alt="TT" class="w-6 h-6 rounded-full object-cover" onerror="this.src='https://placehold.co/24x24/000000/ffffff?text=T'"></a>
+                    <a href="#" class="icon-button transition-colors duration-300"><img src="https://ncfqnbztgxwjkpfggwlj.supabase.co/storage/v1/object/public/assets/icons/social.png" alt="SC" class="w-6 h-6 rounded-full object-cover" onerror="this.src='https://placehold.co/24x24/FFFC00/000000?text=S'"></a>
+                </div>
+            </div>
+        </div>
+        <div class="text-center py-4 text-sm text-muted" style="background-color: var(--bg-section-muted); border-top: 1px solid var(--border-card);">
+            &copy; 2025 ODO YAA'S SIGNATURE. All Rights Reserved.
+        </div>
+    </footer>
+    
+    <!-- Add to Cart Popup -->
+    <div id="popup-message" class="hidden fixed bottom-10 right-10 bg-green-800/90 backdrop-blur-sm border border-green-600 text-white py-3 px-6 rounded-lg shadow-xl z-50">
+        <p>Item added to your bag!</p>
+    </div>
+
+    <!-- Three.js and App Logic -->
+    <script type="importmap">{ "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js" } }</script>
+   
+   <script type="module">
+        import * as THREE from 'three';
+
+        // === BASH TERMINAL LOGIC ===
+        const bashTerminal = document.getElementById('bash-terminal');
+        const bashContent = document.getElementById('bash-content');
+        
+        // Log function made global
+        window.logToBash = (message, type = 'info') => {
+            if (!bashContent) return;
+            const now = new Date();
+            const timeString = `[${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')}:${now.getSeconds().toString().padStart(2,'0')}]`;
+            
+            const line = document.createElement('div');
+            line.className = 'bash-line';
+            
+            let typeClass = 'bash-msg-info';
+            if (type === 'error') typeClass = 'bash-msg-error';
+            if (type === 'warning') typeClass = 'bash-msg-warning';
+            if (type === 'success') typeClass = 'bash-msg-success';
+
+            line.innerHTML = `
+                <span class="bash-time">${timeString}</span>
+                <span class="bash-prompt">$</span>
+                <span class="${typeClass}">${message}</span>
+            `;
+            
+            bashContent.appendChild(line);
+            bashContent.scrollTop = bashContent.scrollHeight; // Auto-scroll
+        };
+
+        // Toggle terminal with 'Ctrl + `'
+        document.addEventListener('keydown', (e) => {
+            if (e.ctrlKey && e.key === '`') {
+                bashTerminal.classList.toggle('open');
+                window.logToBash(bashTerminal.classList.contains('open') ? 'Terminal session opened.' : 'Terminal session hidden.');
+            }
+        });
+
+        // Initialize logs
+        window.logToBash('System boot sequence initiated...', 'warning');
+        window.logToBash('Loading Odo Yaa\'s Core Modules...', 'info');
+
+        // === SUPABASE SETUP ===
+        const SUPABASE_URL = 'https://ncfqnbztgxwjkpfggwlj.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5jZnFuYnp0Z3h3amtwZmdnd2xqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjIyNjA5MjQsImV4cCI6MjA3NzgzNjkyNH0.kbR2e8UZgOymRq9YqI_8QXrfnPeOlgxKFWyQaDoqHBM';
+        let supabase;
+        try {
+            supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+            window.logToBash('Supabase Client: Connected.', 'success');
+        } catch (error) {
+            console.error("Error creating Supabase client:", error);
+            window.logToBash('Supabase Connection Failed!', 'error');
+        }
+
+        // --- 3D Background Scene ---
+        let scene, camera, renderer, crystal, particles;
+        let mouseX = 0, mouseY = 0;
+        const windowHalfX = window.innerWidth / 2;
+        const windowHalfY = window.innerHeight / 2;
+
+        function init3D() {
+            try {
+                scene = new THREE.Scene();
+                camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+                camera.position.z = 5;
+
+                renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+                renderer.setSize(window.innerWidth, window.innerHeight);
+                renderer.setPixelRatio(window.devicePixelRatio);
+                document.getElementById('canvas-container').appendChild(renderer.domElement);
+
+                const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+                scene.add(ambientLight);
+                const pointLight = new THREE.PointLight(0xffd700, 1.5, 100);
+                pointLight.position.set(5, 5, 5);
+                scene.add(pointLight);
+
+                const geometry = new THREE.IcosahedronGeometry(1.5, 1);
+                const material = new THREE.MeshStandardMaterial({
+                    color: 0xf59e0b, roughness: 0.1, metalness: 0.9, transparent: true, opacity: 0.85, emissive: 0x1a1a1a
+                });
+                crystal = new THREE.Mesh(geometry, material);
+                scene.add(crystal);
+
+                const particlesGeometry = new THREE.BufferGeometry();
+                const particlesCount = 5000;
+                const posArray = new Float32Array(particlesCount * 3);
+                for (let i = 0; i < particlesCount * 3; i++) {
+                    posArray[i] = (Math.random() - 0.5) * 25;
+                }
+                particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+                const particlesMaterial = new THREE.PointsMaterial({ size: 0.01, color: 0xffffff, transparent: true, opacity: 0.5 });
+                particles = new THREE.Points(particlesGeometry, particlesMaterial);
+                scene.add(particles);
+
+                document.addEventListener('mousemove', onDocumentMouseMove, false);
+                window.addEventListener('resize', onWindowResize, false);
+                window.logToBash('3D Engine: Initialized.', 'success');
+            } catch (err) {
+                console.error("Failed to initialize 3D scene:", err);
+                const canvasContainer = document.getElementById('canvas-container');
+                if(canvasContainer) canvasContainer.style.display = 'none';
+                window.logToBash('3D Engine Initialization Failed.', 'error');
+            }
+        }
+
+        function onWindowResize() {
+            if (camera && renderer) {
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(window.innerWidth, window.innerHeight);
+            }
+        }
+
+        function onDocumentMouseMove(event) {
+            mouseX = (event.clientX - windowHalfX) / 200;
+            mouseY = (event.clientY - windowHalfY) / 200;
+        }
+
+        function animate3D() {
+            requestAnimationFrame(animate3D);
+            if (crystal && particles && camera && renderer && scene) {
+                crystal.rotation.x += 0.001;
+                crystal.rotation.y += 0.0015;
+                particles.rotation.y += 0.0003;
+                camera.position.x += (mouseX - camera.position.x) * 0.05;
+                camera.position.y += (-mouseY - camera.position.y) * 0.05;
+                camera.lookAt(scene.position);
+                renderer.render(scene, camera);
+            }
+        }
+
+        // --- Application Logic ---
+        let products = [];
+        let testimonials = [];
+        let cart = [];
+        let heroImageIndex = 0;
+        let currentDeliveryDetails = {};
+        const WHATSAPP_NUMBER = '233540203780';
+
+        // --- Theme Logic ---
+        const themeToggle = document.getElementById('theme-toggle');
+        const sunIcon = document.getElementById('theme-icon-sun');
+        const moonIcon = document.getElementById('theme-icon-moon');
+
+        function applyTheme(theme) {
+            if (theme === 'dark') {
+                document.documentElement.classList.add('dark');
+                sunIcon.classList.remove('hidden');
+                moonIcon.classList.add('hidden');
+            } else {
+                document.documentElement.classList.remove('dark');
+                sunIcon.classList.add('hidden');
+                moonIcon.classList.remove('hidden');
+            }
+            window.logToBash(`Theme changed to: ${theme.toUpperCase()}`, 'info');
+        }
+
+        function toggleTheme() {
+            const currentTheme = document.documentElement.classList.contains('dark') ? 'dark' : 'light';
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            localStorage.setItem('theme', newTheme);
+            applyTheme(newTheme);
+        }
+
+        function initializeTheme() {
+            const savedTheme = localStorage.getItem('theme');
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            if (savedTheme) { applyTheme(savedTheme); } else { applyTheme('dark'); }
+        }
+        
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+            if (!localStorage.getItem('theme')) { applyTheme(e.matches ? 'dark' : 'light'); }
+        });
+        themeToggle.addEventListener('click', toggleTheme);
+        
+        // --- Helper Functions ---
+        function renderProducts(productsToRender, containerId) {
+            const productList = document.getElementById(containerId);
+             if (!productList) return;
+            productList.innerHTML = '';
+            if (!productsToRender || productsToRender.length === 0) {
+                productList.innerHTML = `<p class="text-muted text-center col-span-full">No products found.</p>`;
+                return;
+            }
+            productsToRender.forEach(product => {
+                const productCard = `
+                    <div class="product-card cursor-pointer bg-card rounded-lg p-4 flex flex-col items-center text-center transform hover:-translate-y-2 transition-transform duration-300 shadow-lg" data-product-id="${product.id}">
+                        <img src="${product.image}" alt="${product.name}" class="product-image" onerror="this.src='https://placehold.co/300x300/1a1a1a/f59e0b?text=Image+Not+Found'">
+                        <h3 class="text-xl font-semibold logo-font">${product.name}</h3>
+                        <p class="text-muted mb-2">${product.category}</p>
+                        <p class="text-2xl font-bold text-amber mb-4">GH₵${parseFloat(product.price).toFixed(2)}</p>
+                        <button class="add-to-cart-btn w-full bg-button text-button font-semibold py-2 px-4 rounded-full hover:bg-button-hover transition-colors duration-300" data-id="${product.id}">Add to Bag</button>
+                    </div>
+                `;
+                productList.innerHTML += productCard;
+            });
+        }
+        
+        function renderProductDetail(productId) {
+            const product = products.find(p => p.id === productId);
+            if (!product) { navigateToPage('explore'); return; }
+
+            document.getElementById('pdp-image-container').innerHTML = `<img src="${product.image}" alt="${product.name}" class="w-full h-full object-cover" onerror="this.src='https://placehold.co/600x600/1a1a1a/f59e0b?text=Image+Not+Found'" />`;
+            document.getElementById('pdp-name').textContent = product.name;
+            document.getElementById('pdp-category').textContent = product.category;
+            document.getElementById('pdp-price').textContent = `GH₵${parseFloat(product.price).toFixed(2)}`;
+            document.getElementById('pdp-description').textContent = product.description;
+            document.getElementById('pdp-notes').innerHTML = (product.ingredients || '').split('. ').map(note => note.trim() ? `<span class="block">${note}</span>` : '').join('');
+            document.getElementById('pdp-longevity').textContent = product.longevity || 'N/A';
+            document.getElementById('pdp-add-to-cart-btn').dataset.id = product.id;
+            
+            window.logToBash(`Viewed Product: ${product.name} (ID: ${product.id})`, 'info');
+            navigateToPage('product-detail');
+        }
+
+        function updateCart() {
+            const cartItemsContainer = document.getElementById('cart-items');
+            const cartSummaryContainer = document.getElementById('cart-summary');
+            const cartBadge = document.getElementById('cart-badge');
+            if (!cartItemsContainer || !cartSummaryContainer || !cartBadge) return;
+
+            if (cart.length === 0) {
+                cartItemsContainer.innerHTML = `<p class="text-muted text-center">Your shopping bag is empty.</p>`;
+                cartSummaryContainer.innerHTML = '';
+                cartBadge.classList.add('hidden');
+                return;
+            }
+
+            let itemsHtml = '';
+            let subtotal = 0;
+            let totalItems = 0;
+
+            cart.forEach(item => {
+                const product = products.find(p => p.id === item.id);
+                if (!product) return;
+                
+                let itemPrice = parseFloat(product.price);
+                if (isNaN(itemPrice)) itemPrice = 0;
+
+                itemsHtml += `
+                    <div class="flex items-center justify-between py-4 border-b last:border-b-0" style="border-color: var(--border-card);">
+                        <div class="flex items-center">
+                            <img src="${product.image}" alt="${product.name}" class="w-16 h-16 object-cover rounded-md mr-4" onerror="this.src='https://placehold.co/64x64/1a1a1a/f59e0b?text=Img'">
+                            <div><h4 class="font-semibold">${product.name}</h4><p class="text-muted text-sm">GH₵${itemPrice.toFixed(2)}</p></div>
+                        </div>
+                        <div class="flex items-center space-x-4">
+                            <div class="flex items-center border rounded-full" style="border-color: var(--border-input);">
+                                <button class="quantity-change-btn p-2" data-id="${product.id}" data-change="-1">-</button>
+                                <span class="px-2">${item.quantity}</span>
+                                <button class="quantity-change-btn p-2" data-id="${product.id}" data-change="1">+</button>
+                            </div>
+                            <p class="font-semibold w-20 text-right">GH₵${(itemPrice * item.quantity).toFixed(2)}</p>
+                            <button class="remove-from-cart-btn text-slate-500 hover:text-red-500 text-2xl" data-id="${product.id}">×</button>
+                        </div>
+                    </div>
+                `;
+                subtotal += itemPrice * item.quantity;
+                totalItems += item.quantity;
+            });
+
+            cartItemsContainer.innerHTML = itemsHtml;
+            const tax = subtotal * 0.01;
+            const total = subtotal + tax;
+
+            cartSummaryContainer.innerHTML = `
+                <div class="space-y-2">
+                    <p class="text-muted text-lg">Subtotal: <span class="font-semibold" style="color: var(--text-color);">GH₵${subtotal.toFixed(2)}</span></p>
+                    <p class="text-muted text-md">Tax (1%): <span class="font-semibold" style="color: var(--text-color);">GH₵${tax.toFixed(2)}</span></p>
+                    <p class="text-amber text-2xl font-bold mt-2">Total: <span style="color: var(--text-color);">GH₵${total.toFixed(2)}</span></p>
+                </div>
+                <div class="mt-6 flex flex-col sm:flex-row justify-end gap-4">
+                     <button id="empty-cart-btn" class="bg-red-800/80 text-white font-bold py-3 px-8 rounded-full text-lg hover:bg-red-700 transition-colors duration-300">Empty Cart</button>
+                     <button class="nav-link bg-button text-button font-bold py-3 px-8 rounded-full text-lg hover:bg-button-hover transition-colors duration-300" data-page="checkout">Proceed to Checkout</button>
+                </div>
+            `;
+            
+            renderCheckoutSummary();
+            cartBadge.textContent = totalItems;
+            cartBadge.classList.remove('hidden');
+        }
+        
+        function renderCheckoutSummary() {
+            const checkoutSummaryContainer = document.getElementById('checkout-summary');
+            if (!checkoutSummaryContainer) return;
+            if(cart.length === 0) { checkoutSummaryContainer.innerHTML = `<p class="text-muted text-center">Your cart is empty.</p>`; return; }
+            let itemsHtml = '<div class="space-y-4 mb-6">';
+            let subtotal = 0;
+            cart.forEach(item => {
+                const product = products.find(p => p.id === item.id);
+                if (!product) return;
+                let itemPrice = parseFloat(product.price);
+                itemsHtml += `<div class="flex justify-between items-center text-sm"><p class="text-muted">${product.name} <span class="text-slate-500">x${item.quantity}</span></p><p class="font-semibold">GH₵${(itemPrice * item.quantity).toFixed(2)}</p></div>`;
+                 subtotal += itemPrice * item.quantity;
+            });
+             itemsHtml += '</div>';
+            const tax = subtotal * 0.01;
+            const total = subtotal + tax;
+            checkoutSummaryContainer.innerHTML = `${itemsHtml}<div class="border-t pt-4 space-y-2" style="border-color: var(--border-card);"><p class="flex justify-between text-muted">Subtotal: <span class="font-semibold" style="color: var(--text-color);">GH₵${subtotal.toFixed(2)}</span></p><p class="flex justify-between text-muted">Tax (1%): <span class="font-semibold" style="color: var(--text-color);">GH₵${tax.toFixed(2)}</span></p><p class="flex justify-between text-amber text-xl font-bold mt-2">Total: <span style="color: var(--text-color);">GH₵${total.toFixed(2)}</span></p></div>`;
+        }
+
+        function showPopupMessage(message) {
+            const popup = document.getElementById('popup-message');
+            if (popup) {
+                popup.querySelector('p').textContent = message;
+                popup.classList.remove('hidden');
+                setTimeout(() => { popup.classList.add('popup-show'); }, 10);
+                setTimeout(() => { popup.classList.remove('popup-show'); setTimeout(() => { popup.classList.add('hidden'); }, 500); }, 2500); 
+            }
+        }
+
+        function addToCart(productId) {
+            const existingItem = cart.find(item => item.id === productId);
+            if (existingItem) { existingItem.quantity++; } else { cart.push({ id: productId, quantity: 1 }); }
+            const product = products.find(p => p.id === productId);
+            if(product) window.logToBash(`Added to Cart: ${product.name}`, 'success');
+            updateCart();
+        }
+        
+        function emptyCart() { cart = []; updateCart(); window.logToBash('Cart emptied.', 'warning'); }
+
+        function handleQuantityChange(productId, change) {
+            const item = cart.find(item => item.id === productId);
+            if (item) {
+                item.quantity += change;
+                if (item.quantity <= 0) { cart = cart.filter(cartItem => cartItem.id !== productId); }
+            }
+            updateCart();
+        }
+
+        function removeFromCart(productId) { cart = cart.filter(item => item.id !== productId); updateCart(); }
+        
+        function renderTestimonials() {
+            const marqueeContent = document.getElementById('marquee-content');
+            if (!marqueeContent) return;
+            marqueeContent.innerHTML = '';
+            if (!testimonials || testimonials.length === 0) { marqueeContent.innerHTML = `<p class="text-muted text-center w-full">Be the first to leave a review!</p>`; return; }
+            const testimonialsHtml = testimonials.map(t => `<div class="testimonial-card bg-card rounded-lg p-6 w-80 md:w-96 mx-4 flex-shrink-0"><p class="text-muted italic mb-4">"${t.comment}"</p><p class="font-semibold text-amber">- ${t.name}</p></div>`).join('');
+            marqueeContent.innerHTML = testimonialsHtml + testimonialsHtml; 
+        }
+
+        function navigateToPage(pageId) {
+            document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
+            const targetPage = document.getElementById(`${pageId}-page`);
+            if(targetPage) { targetPage.classList.add('active'); } else { document.getElementById('home-page').classList.add('active'); }
+
+            document.querySelectorAll('.nav-link').forEach(link => { link.classList.toggle('active', link.dataset.page === pageId); });
+            document.querySelectorAll('.nav-link-mobile').forEach(link => { link.classList.toggle('active', link.dataset.page === pageId); });
+            window.scrollTo(0, 0);
+            
+            window.logToBash(`Mapsd to: /${pageId}`, 'info');
+        }
+
+        function handleSearch() {
+            const searchInput = document.getElementById('search-input');
+            const searchTerm = searchInput.value.trim().toLowerCase();
+            const searchDropdown = document.getElementById('search-dropdown');
+            const filteredProducts = products.filter(product => product.name.toLowerCase().includes(searchTerm) || product.category.toLowerCase().includes(searchTerm));
+            renderProducts(filteredProducts, 'product-list');
+            window.logToBash(`Searching for: "${searchTerm}" - Found ${filteredProducts.length} results`, 'info');
+            navigateToPage('explore');
+            searchDropdown.classList.add('hidden');
+            searchInput.value = '';
+        }
+
+        function startHeroCarousel() {
+            const heroCarousel = document.getElementById('hero-carousel');
+            if (!products || products.length === 0) return;
+            let heroImages = products.filter(p => p.category === 'For Him').slice(0, 5).map(p => p.image);
+            if(heroImages.length === 0) { heroImages = products.slice(0, 5).map(p => p.image); }
+            if (!heroCarousel || heroImages.length === 0) return;
+            heroCarousel.innerHTML = ''; 
+            heroImages.forEach((src, index) => {
+                const img = document.createElement('img');
+                img.src = src;
+                img.alt = "Featured Fragrance";
+                if (index === 0) img.classList.add('active');
+                heroCarousel.appendChild(img);
+            });
+            const images = heroCarousel.querySelectorAll('img');
+            if (images.length < 2) return; 
+            setInterval(() => {
+                images[heroImageIndex].classList.remove('active');
+                heroImageIndex = (heroImageIndex + 1) % images.length;
+                images[heroImageIndex].classList.add('active');
+            }, 5000);
+        }
+
+        function getStatusBadgeStyle(status) {
+            switch (status) {
+                case 'Order Placed': return 'background-color: #3B82F6; color: #fff;';
+                case 'Accepted': return 'background-color: #6366F1; color: #fff;';
+                case 'Delivered': return 'background-color: #10B981; color: #fff;';
+                case 'Cancelled': return 'background-color: #EF4444; color: #fff;';
+                case 'Processing': default: return 'background-color: #F59E0B; color: #000;';
+            }
+        }
+
+        function renderTrackingResults(order, statuses) {
+            const container = document.getElementById('tracking-results');
+            if (!container) return;
+            let statusHTML = `<div class="space-y-4"><div class="p-4 bg-card rounded-lg"><p class="font-semibold">Order ID: ${order.order_id_text}</p><p class="text-sm text-muted">Customer: ${order.customer_name}</p><p class="mt-2"><span class="px-2 py-1 rounded-full text-xs font-semibold" style="${getStatusBadgeStyle(order.status)}">${order.status}</span></p></div><div class="bg-card p-6 rounded-lg"><h3 class="text-2xl logo-font mb-4">Order History</h3><ol class="relative border-l" style="border-color: var(--border-card);">`;
+            if (statuses.length === 0) { statusHTML += `<li class="ml-4"><p class="text-muted">No history found.</p></li>`; } else {
+                statuses.forEach(status => {
+                    const statusDate = new Date(status.created_at);
+                    let dotColor = 'bg-amber-500'; 
+                    if (status.status === 'Delivered') dotColor = 'bg-green-500';
+                    else if (status.status === 'Cancelled') dotColor = 'bg-red-500';
+                    else if (status.status === 'Order Placed') dotColor = 'bg-blue-500';
+
+                    statusHTML += `<li class="mb-10 ml-4"><div class="absolute w-3 h-3 ${dotColor} rounded-full mt-1.5 -left-1.5 border" style="border-color: var(--bg-color);"></div><time class="mb-1 text-sm font-normal leading-none text-muted">${statusDate.toLocaleString()}</time><h3 class="text-lg font-semibold">${status.status}</h3></li>`;
+                });
+            }
+            statusHTML += `</ol></div></div>`;
+            container.innerHTML = statusHTML;
+            window.logToBash(`Tracking info retrieved for ${order.order_id_text}`, 'success');
+        }
+
+        async function fetchAndRenderTracking(orderId) {
+            const container = document.getElementById('tracking-results');
+            if (!container) return;
+            container.innerHTML = `<p class="text-amber text-center">Tracking order...</p>`;
+            window.logToBash(`Querying database for Order: ${orderId}...`, 'info');
+            try {
+                const { data: order, error: orderError } = await supabase.from('orders').select('*').eq('order_id_text', orderId.trim()).single();
+                if (orderError || !order) {
+                    container.innerHTML = `<div class="p-4 bg-card rounded-lg text-center text-red-400">Order not found. Please check the ID and try again.</div>`;
+                    window.logToBash(`Order ${orderId} not found.`, 'error');
+                    return;
+                }
+                const { data: statuses, error: historyError } = await supabase.from('order_status_history').select('*').eq('order_id', order.id).order('created_at', { ascending: true }); 
+                if (historyError) throw historyError;
+                renderTrackingResults(order, statuses || []);
+            } catch (error) {
+                console.error('Tracking error:', error);
+                container.innerHTML = `<div class="p-4 bg-card rounded-lg text-center text-red-400"><p>An error occurred.</p><p class="mt-2 text-xs text-left" style="font-family: monospace;">${error.message}</p></div>`;
+                window.logToBash(`Tracking Error: ${error.message}`, 'error');
+            }
+        }
+        
+        function placeOrderViaWhatsApp(orderId, total) {
+            const name = currentDeliveryDetails.name;
+            const address = currentDeliveryDetails.address.trim();
+            const phone = currentDeliveryDetails.phone;
+            let plainMessage = `ODO YAA'S SIGNATURE - NEW ORDER\n\nOrder ID: ${orderId}\nCustomer: ${name}\nContact: ${phone}\nAddress:\n${address}\n\nOrder Details:\n`;
+            let subtotal = 0;
+            cart.forEach(item => {
+                const product = products.find(p => p.id === item.id);
+                if (product) {
+                    const itemTotal = parseFloat(product.price) * item.quantity;
+                    subtotal += itemTotal;
+                    plainMessage += `${product.name} (x ${item.quantity}) - GH₵${itemTotal.toFixed(2)}\n`;
+                }
+            });
+            const tax = subtotal * 0.01;
+            plainMessage += `\nSubtotal: GH₵${subtotal.toFixed(2)}\nTax (1%): GH₵${tax.toFixed(2)}\nTOTAL DUE: GH₵${total.toFixed(2)}\n\nPlease confirm the payment method (MoMo/Bank) and delivery time. Thank you!`;
+            const whatsappUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(plainMessage)}`;
+            window.logToBash(`Opening WhatsApp for Order ${orderId}...`, 'info');
+            window.open(whatsappUrl, '_blank');
+        }
+
+        // --- Event Listeners ---
+        document.addEventListener('DOMContentLoaded', () => {
+            const preloader = document.getElementById('preloader');
+            const preloaderText = document.getElementById('preloader-text');
+            function hidePreloader() { if (preloader) { preloader.style.opacity = '0'; setTimeout(() => preloader.style.display = 'none', 500); } }
+            function showPreloaderError(message) { if (preloaderText) { preloaderText.textContent = message; preloaderText.style.color = '#EF4444'; } }
+            
+            async function loadData() {
+                if (!supabase) { showPreloaderError("Failed to connect to database."); return; }
+                try {
+                    preloaderText.textContent = "Loading Products...";
+                    window.logToBash('Fetching product catalog...', 'info');
+                    const [productsRes, testimonialsRes] = await Promise.all([
+                        supabase.from('products').select('*').order('created_at', { ascending: false }),
+                        supabase.from('testimonials').select('*').order('created_at', { ascending: false })
+                    ]);
+                    if (productsRes.error) throw new Error(`Products Error: ${productsRes.error.message}`);
+                    if (testimonialsRes.error) throw new Error(`Testimonials Error: ${testimonialsRes.error.message}`);
+                    products = productsRes.data || []; 
+                    testimonials = testimonialsRes.data || []; 
+                    preloaderText.textContent = "Rendering...";
+                    renderProducts(products, 'product-list');
+                    let featuredProducts = products.filter(p => p.new_arrival).slice(0, 4);
+                    if (featuredProducts.length === 0) { featuredProducts = products.slice(0, 4); }
+                    renderProducts(featuredProducts, 'featured-product-list');
+                    renderProducts(products.filter(p => p.new_arrival), 'new-arrivals-list');
+                    startHeroCarousel(); 
+                    renderTestimonials();
+                    hidePreloader();
+                    window.logToBash(`Loaded ${products.length} products successfully.`, 'success');
+                } catch (error) {
+                    console.error('Error loading data:', error);
+                    showPreloaderError("Error loading content. Please refresh.");
+                    window.logToBash(`CRITICAL ERROR: ${error.message}`, 'error');
+                }
+            }
+            
+            initializeTheme();
+            init3D();
+            animate3D();
+            loadData();
+            updateCart();
+            navigateToPage('home');
+            
+            const searchIcon = document.getElementById('search-icon');
+            const searchDropdown = document.getElementById('search-dropdown');
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+            const searchInput = document.getElementById('search-input');
+            const searchButton = document.getElementById('search-button');
+            const checkoutForm = document.getElementById('checkout-form');
+            const careerForm = document.getElementById('career-application-form');
+            const trackingForm = document.getElementById('tracking-form');
+            const contactForm = document.getElementById('contact-form');
+            const addTestimonialBtn = document.getElementById('add-testimonial-btn');
+            const testimonialFormContainer = document.getElementById('testimonial-form-container');
+            const testimonialForm = document.getElementById('testimonial-form');
+            const getDirectionsBtn = document.getElementById('get-directions-btn');
+            const backToExploreBtn = document.getElementById('back-to-explore-btn');
+
+            if (searchIcon) {
+                searchIcon.addEventListener('click', (event) => {
+                    event.stopPropagation();
+                    searchDropdown.classList.toggle('hidden');
+                    if (!searchDropdown.classList.contains('hidden')) { searchInput.focus(); }
+                });
+            }
+
+            if (searchButton) searchButton.addEventListener('click', handleSearch);
+            if (searchInput) { searchInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') handleSearch(); }); }
+
+            if (mobileMenuButton) { mobileMenuButton.addEventListener('click', () => { mobileMenu.classList.toggle('hidden'); }); }
+            
+            document.addEventListener('click', (e) => {
+                 if (e.target.closest('.nav-link') || e.target.closest('.nav-link-mobile')) {
+                    e.preventDefault();
+                    const link = e.target.closest('.nav-link, .nav-link-mobile');
+                    const pageId = link.dataset.page;
+                    if (pageId === 'explore') { renderProducts(products, 'product-list'); }
+                    if(pageId === 'checkout' && cart.length === 0){ showPopupMessage("Your cart is empty!"); return; }
+                    if (pageId === 'application') {
+                        const jobTitle = link.dataset.jobTitle || 'General Application';
+                        const titleInput = document.getElementById('career-job-title-display');
+                        if (titleInput) titleInput.value = jobTitle;
+                    }
+                    navigateToPage(pageId);
+                    if (mobileMenu && !mobileMenu.classList.contains('hidden')) { mobileMenu.classList.add('hidden'); }
+                 }
+            });
+
+            document.querySelectorAll('.category-card').forEach(card => {
+                card.addEventListener('click', (e) => {
+                    const category = e.currentTarget.dataset.category;
+                    const filtered = products.filter(p => p.category === category);
+                    renderProducts(filtered, 'product-list');
+                    navigateToPage('explore');
+                });
+            });
+            
+            document.addEventListener('click', (e) => {
+                 if (e.target.closest('.product-card')) {
+                    if (e.target.closest('.add-to-cart-btn')) return;
+                    const card = e.target.closest('.product-card');
+                    const productId = parseInt(card.dataset.productId);
+                    if (!isNaN(productId)) { renderProductDetail(productId); }
+                 }
+            });
+            
+            if(backToExploreBtn) {
+                backToExploreBtn.addEventListener('click', (e) => {
+                    renderProducts(products, 'product-list'); 
+                    navigateToPage('explore');
+                });
+            }
+
+            document.addEventListener('click', (e) => {
+                if (e.target.closest('.add-to-cart-btn')) {
+                    const button = e.target.closest('.add-to-cart-btn');
+                    const productId = parseInt(button.dataset.id);
+                    if (isNaN(productId)) return;
+                    const product = products.find(p => p.id === productId);
+                    if (!product) return;
+                    addToCart(productId);
+                    button.innerHTML = `Added ✓`;
+                    setTimeout(() => { button.innerHTML = 'Add to Bag'; }, 1500);
+                    showPopupMessage(`${product.name} added to bag!`);
+                }
+                if (e.target.closest('#empty-cart-btn')) { emptyCart(); }
+            });
+
+            const cartItemsEl = document.getElementById('cart-items');
+            if (cartItemsEl) {
+                cartItemsEl.addEventListener('click', (e) => {
+                    if (e.target.closest('.quantity-change-btn')) {
+                        const btn = e.target.closest('.quantity-change-btn');
+                        const productId = parseInt(btn.dataset.id);
+                        const change = parseInt(btn.dataset.change);
+                        handleQuantityChange(productId, change);
+                    }
+                    if (e.target.closest('.remove-from-cart-btn')) {
+                        const productId = parseInt(e.target.closest('.remove-from-cart-btn').dataset.id);
+                        removeFromCart(productId);
+                    }
+                });
+            }
+            
+            if (checkoutForm) {
+                checkoutForm.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    currentDeliveryDetails = {
+                        name: document.getElementById('fullname').value,
+                        email: document.getElementById('email').value,
+                        phone: document.getElementById('phone').value,
+                        address: document.getElementById('address').value,
+                    };
+                    document.getElementById('confirm-name').textContent = currentDeliveryDetails.name;
+                    document.getElementById('confirm-email').textContent = currentDeliveryDetails.email;
+                    document.getElementById('confirm-phone').textContent = currentDeliveryDetails.phone;
+                    document.getElementById('confirm-address').textContent = currentDeliveryDetails.address;
+                    document.getElementById('checkout-content').classList.add('hidden');
+                    document.getElementById('details-confirmation').classList.remove('hidden');
+                    window.logToBash('Checkout details confirmed locally.', 'info');
+                });
+            }
+            
+            const editDetailsBtn = document.getElementById('edit-details-btn');
+            if (editDetailsBtn) {
+                editDetailsBtn.addEventListener('click', () => {
+                    document.getElementById('details-confirmation').classList.add('hidden');
+                    document.getElementById('checkout-content').classList.remove('hidden');
+                });
+            }
+            
+            const confirmOrderBtn = document.getElementById('confirm-order-btn');
+            if (confirmOrderBtn) {
+                confirmOrderBtn.addEventListener('click', async () => {
+                    let nextOrderIdNumber = Math.floor(Math.random() * 900000) + 100000;
+                    const orderId = `ODYS-${nextOrderIdNumber}`;
+                    const subtotal = cart.reduce((sum, item) => {
+                        const product = products.find(p => p.id === item.id);
+                        return sum + (product ? parseFloat(product.price) * item.quantity : 0);
+                    }, 0);
+                    const total = subtotal * 1.01;
+                    const confirmBtn = document.getElementById('confirm-order-btn');
+                    confirmBtn.disabled = true;
+                    confirmBtn.innerHTML = 'Saving Order...';
+                    window.logToBash(`Submitting Order ${orderId}...`, 'warning');
+
+                    try {
+                        const { data: orderData, error: orderError } = await supabase.from('orders').insert({
+                                order_id_text: orderId, customer_name: currentDeliveryDetails.name, customer_email: currentDeliveryDetails.email,
+                                customer_phone: currentDeliveryDetails.phone, customer_address: currentDeliveryDetails.address, total: total.toFixed(2), status: 'Order Placed'
+                            }).select('id').single();
+                        if (orderError) throw orderError;
+                        const newOrderId = orderData.id; 
+                        const orderItems = cart.map(item => {
+                            const product = products.find(p => p.id === item.id);
+                            return { order_id: newOrderId, product_id: product.id, name: product.name, price: product.price, quantity: item.quantity, image: product.image };
+                        });
+                        const { error: itemsError } = await supabase.from('order_items').insert(orderItems);
+                        if (itemsError) throw itemsError;
+                        const { error: historyError } = await supabase.from('order_status_history').insert({ order_id: newOrderId, status: 'Order Placed' });
+                        if (historyError) throw historyError;
+
+                        window.logToBash(`Order ${orderId} saved successfully.`, 'success');
+                        placeOrderViaWhatsApp(orderId, total); 
+                        document.getElementById('details-confirmation').classList.add('hidden');
+                        document.getElementById('order-confirmation').classList.remove('hidden');
+                        document.getElementById('confirmed-order-id').textContent = orderId;
+                        emptyCart();
+                    } catch (error) {
+                        alert('Error placing order: ' + error.message);
+                        window.logToBash(`Order Submission Failed: ${error.message}`, 'error');
+                        console.error('Order submission error:', error);
+                    } finally {
+                        confirmBtn.disabled = false;
+                        confirmBtn.innerHTML = 'Confirm & Pay via WhatsApp';
+                    }
+                });
+            }
+            
+            if(careerForm) {
+                careerForm.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    const confirmationMsg = document.getElementById('application-confirmation');
+                    confirmationMsg.classList.remove('hidden');
+                    careerForm.reset();
+                    window.scrollTo(0, confirmationMsg.offsetTop - 100);
+                     setTimeout(() => { confirmationMsg.classList.add('hidden'); }, 4000);
+                });
+            }
+
+            let currentTrackingOrderId = '';
+            let trackingPollTimer = null;
+            if (trackingForm) {
+                trackingForm.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    const input = document.getElementById('order-id-input');
+                    const id = (input?.value || '').trim();
+                    if (!id) {
+                        const container = document.getElementById('tracking-results');
+                        if (container) container.innerHTML = `<div class="p-4 bg-card rounded-lg text-center text-red-400">Please enter an Order ID.</div>`;
+                        return;
+                    }
+                    if (trackingPollTimer) clearInterval(trackingPollTimer);
+                    currentTrackingOrderId = id; 
+                    fetchAndRenderTracking(id); 
+                    trackingPollTimer = setInterval(() => { if (currentTrackingOrderId) fetchAndRenderTracking(currentTrackingOrderId); }, 10000); 
+                });
+            }
+
+            if(contactForm) {
+                contactForm.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    const confirmationMsg = document.getElementById('contact-confirmation');
+                    confirmationMsg.classList.remove('hidden');
+                    contactForm.reset();
+                    window.scrollTo(0, confirmationMsg.offsetTop - 100);
+                     setTimeout(() => { confirmationMsg.classList.add('hidden'); }, 4000);
+                });
+            }
+
+            if(addTestimonialBtn) {
+                addTestimonialBtn.addEventListener('click', () => {
+                    testimonialFormContainer.classList.toggle('hidden');
+                    if (!testimonialFormContainer.classList.contains('hidden')) { testimonialFormContainer.scrollIntoView({ behavior: 'smooth' }); }
+                });
+            }
+
+            if(testimonialForm) {
+                testimonialForm.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    const name = document.getElementById('testimonial-name').value.trim();
+                    const comment = document.getElementById('testimonial-comment').value.trim();
+                    if (name && comment) {
+                        try {
+                            const { data, error } = await supabase.from('testimonials').insert({ name: name, comment: comment }).select();
+                            if (error) throw error;
+                            testimonials.unshift(data[0]);
+                            renderTestimonials();
+                            testimonialForm.reset();
+                            testimonialFormContainer.classList.add('hidden');
+                            const confirmationMsg = document.getElementById('testimonial-confirmation');
+                            confirmationMsg.classList.remove('hidden');
+                            setTimeout(() => confirmationMsg.classList.add('hidden'), 3000);
+                            window.logToBash(`Testimonial added by ${name}.`, 'success');
+                        } catch (error) { alert('Error submitting review: ' + error.message); }
+                    }
+                });
+            }
+
+            if(getDirectionsBtn) {
+                getDirectionsBtn.addEventListener('click', () => {
+                    const destinationUrl = `https://www.google.com/maps/dir/?api=1&destination=6.088829,-0.276848`;
+                    window.open(destinationUrl, '_blank');
+                    window.logToBash('Opening Google Maps navigation...', 'info');
+                });
+            }
+
+            document.addEventListener('click', (event) => {
+                if (searchDropdown && !searchIcon.contains(event.target) && !searchDropdown.contains(event.target)) {
+                    searchDropdown.classList.add('hidden');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
